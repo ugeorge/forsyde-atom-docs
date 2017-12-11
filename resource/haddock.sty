@@ -1,0 +1,108 @@
+% Default Haddock style definitions.  To use your own style, invoke
+% Haddock with the option --latex-style=mystyle.
+
+\usepackage{tabulary} % see below
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\DeclareUnicodeCharacter{3B1}{$\alpha$}
+\DeclareUnicodeCharacter{3B2}{$\beta$}
+\DeclareUnicodeCharacter{3B3}{$\gamma$}
+\DeclareUnicodeCharacter{3BB}{$\lambda$}
+\DeclareUnicodeCharacter{3C0}{$\pi$}
+\DeclareUnicodeCharacter{3C6}{$\phi$}
+\DeclareUnicodeCharacter{1D62}{\textsubscript{i}}
+\DeclareUnicodeCharacter{1D64}{\textsubscript{u}}
+\DeclareUnicodeCharacter{1D65}{\textsubscript{v}}
+\DeclareUnicodeCharacter{2080}{\textsubscript{e}}
+\DeclareUnicodeCharacter{2091}{\textsubscript{e}}
+\DeclareUnicodeCharacter{2081}{\textsubscript{1}}
+\DeclareUnicodeCharacter{2082}{\textsubscript{2}}
+\DeclareUnicodeCharacter{2092}{\textsubscript{o}}
+\DeclareUnicodeCharacter{2208}{$\in$}
+\DeclareUnicodeCharacter{207B}{\textsuperscript{-}}
+\DeclareUnicodeCharacter{B9}{\textsuperscript{1}}
+\DeclareUnicodeCharacter{B2}{\textsuperscript{2}}
+\DeclareUnicodeCharacter{D7}{$\times$}
+\DeclareUnicodeCharacter{27C2}{$\bot$}
+\DeclareUnicodeCharacter{22A5}{$\bot$}
+\DeclareUnicodeCharacter{22A4}{$\top$}
+\DeclareUnicodeCharacter{2200}{$\forall$}
+
+
+% make hyperlinks in the PDF, and add an expandabale index
+% \usepackage{hyperref}
+% \usepackage{cleveref}
+\usepackage{varwidth} %for the varwidth minipage environment
+
+\newenvironment{haddocktitle}
+  {\begin{center}\bgroup\large\bfseries}
+  {\egroup\end{center}}
+\newenvironment{haddockprologue}{\vspace{1in}}{}
+
+\newcommand{\haddockmoduleheading}[1]{\section{\texttt{#1}}}
+
+
+\newcommand{\haddockbeginheader}{\hrulefill}
+\newcommand{\haddockendheader}{\noindent\hrulefill}
+
+% a little gap before the ``Methods'' header
+\newcommand{\haddockpremethods}{\vspace{2ex}}
+
+% inserted before \\begin{verbatim}
+\newcommand{\haddockverb}{\small}
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\removequotes}{m}
+ {
+  \tl_set:Nn \l__maxd_argument_tl { #1 }
+  \tl_replace_all:Nnn \l__maxd_argument_tl { " } {  }
+  \tl_use:N \l__maxd_argument_tl
+ }
+\tl_new:N \l__maxd_argument_tl
+\ExplSyntaxOff
+
+% an identifier: add an index entry
+\newcommand{\haddockid}[1]{\haddocktt{\removequotes{#1}}\index{#1@\texttt{#1}}}
+
+% The tabulary environment lets us have a column that takes up ``the
+% rest of the space''.  Unfortunately it doesn't allow
+% the \end{tabulary} to be in the expansion of a macro, it must appear
+% literally in the document text, so Haddock inserts
+% the \end{tabulary} itself.
+\newcommand{\haddockbeginconstrs}{%
+\begin{tabulary}{\linewidth}{@{}LLJ@{}}%
+}
+
+  \newcolumntype{M}{>{\begin{varwidth}{.5\textwidth}}l<{\end{varwidth}}}
+\newcolumntype{B}{b{2ex}}
+  
+\newcommand{\haddockbeginargs}{\begin{tabulary}{\linewidth}{@{}LLJ@{}}}
+
+\newcommand{\haddocktt}[1]{{\small \texttt{#1}}}
+\newcommand{\haddockdecltt}[1]{\small\bfseries \texttt{#1}}
+% \newcommand{\haddockdecltt}[1]{\parbox[t][][t]{2ex}{\small\bfseries \texttt{#1}}}
+                                 
+\makeatletter
+\newenvironment{haddockdesc}
+               {\list{}{\labelwidth\z@ \itemindent-\leftmargin
+                        \let\makelabel\haddocklabel}}
+               {\endlist}
+\newcommand*\haddocklabel[1]{\hspace\labelsep\haddockdecltt{#1}}
+\makeatother
+
+% after a declaration, start a new line for the documentation.
+% Otherwise, the documentation starts right after the declaration,
+% because we're using the list environment and the declaration is the
+% ``label''.  I tried making this newline part of the label, but
+% couldn't get that to work reliably (the space seemed to stretch
+% sometimes).
+\newcommand{\haddockbegindoc}{\hfill\\[1ex]}
+
+% spacing between paragraphs and no \parindent looks better
+\parskip=10pt plus2pt minus2pt
+\setlength{\parindent}{0cm}
