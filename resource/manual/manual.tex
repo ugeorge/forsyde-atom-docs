@@ -1,0 +1,121 @@
+\documentclass{book}
+\usepackage{../atom-manual}
+\usepackage{../urls}
+\usepackage{ccicons}
+
+\title{\textsc{ForSyDe-Atom}\\User Manual}
+\author{George Ungureanu}
+
+\newcommand*{\RootPath}{./}%
+
+\addbibresource{../refs.bib}
+
+\begin{document}
+\dominitoc
+
+\pagenumbering{Roman} 
+\includepdf[pages={1}]{title.pdf}
+
+%License
+\begin{bottompar}
+\begin{tabular}{p{.69\textwidth}r}
+\vspace{-.5cm} This work is licensed under a Creative Commons  Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) License & {\Huge\ccbysa}\\
+\end{tabular}
+\end{bottompar}
+
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+
+\chapter*{List of Case Studies}
+\label{cha:list-publications}
+\markboth{List of Case Studies}{List of Case Studies}
+
+\fullcite{ungureanu17}\dotfill\cref{sec:getting-started:toy-example}
+
+\vspace{1ex}
+\noindent\fullcite{ungureanu18a}\dotfill\cref{sec:hybrid:rc-oscillator}
+
+\mainmatter
+
+\pagenumbering{arabic}
+
+\begin{refsection}
+\chapter{Introduction}
+\label{cha:introduction}
+
+\begin{summary}
+\input{\RootPath/abstract}
+\end{summary}
+\input{\RootPath/purpose}
+\input{\RootPath/abstract}
+\input{../usage}
+
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+
+\part{Examples \& Reports}
+\label{part:introduction}
+
+\begin{refsection}
+\chapter{Getting Started with {{\sc ForSyDe-Atom}}}
+\label{ch:getting-started}
+\renewcommand*{\RootPath}{../../getting-started/docs/latex}%
+\graphicspath{{../../getting-started/docs/latex/figs/}}
+
+\begin{summary}
+\input{\RootPath/input/abstract}
+\end{summary}
+\minitoc
+\vspace{1ex}
+\input{\RootPath/input/info}
+\input{\RootPath/input/goals}
+\input{\RootPath/code/GettingStarted/Basics}
+\input{\RootPath/code/GettingStarted/Plot}
+\input{\RootPath/input/toy-example}
+\input{\RootPath/code/GettingStarted/TestSignals}
+\input{\RootPath/code/GettingStarted/SY}
+\input{\RootPath/code/GettingStarted/DE}
+\input{\RootPath/code/GettingStarted/CT}
+\input{\RootPath/code/GettingStarted/SDF}
+\input{\RootPath/code/GettingStarted/Polymorphic}
+\input{\RootPath/code/GettingStarted/CustomPattern}
+\input{\RootPath/input/conclusion}
+
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\begin{refsection}
+\chapter{Hybrid CT/DT Models in {{\sc ForSyDe-Atom}}}
+\label{ch:hybrid}
+\renewcommand*{\RootPath}{../../hybrid/docs/latex}%
+\graphicspath{{../../hybrid/docs/latex/figs/}}
+
+\begin{summary}
+\input{\RootPath/input/abstract}
+\end{summary}
+\minitoc
+\vspace{1ex}
+\input{\RootPath/input/info}
+\input{\RootPath/input/goals}
+\input{\RootPath/code/Hybrid/RCOsc}
+\input{\RootPath/input/conclusion}
+
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\part{API Documentation}
+\label{part:api-documentation}
+
+\begin{summary}
+  This section is currently under construction. For the moment, please refer to online API documentation at \url{https://forsyde.github.io/forsyde-atom/}
+\end{summary}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

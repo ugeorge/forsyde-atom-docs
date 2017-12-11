@@ -1,0 +1,36 @@
+
+\newcommand{\contentsurl}{https://forsyde.github.io/forsyde-atom/}
+\newcommand{\atomurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom.html}
+
+\newcommand{\skelurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-Skeleton.html}
+\newcommand{\skelvecurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-Skeleton-Vector.html}
+
+\newcommand{\mocurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC.html}
+\newcommand{\mocstreamurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC-Stream.html}
+\newcommand{\moctimeurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC-Time.html}
+\newcommand{\moctstampurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC-TimeStamp.html}
+\newcommand{\mocsyurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC-SY.html}
+\newcommand{\mocdeurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC-DE.html}
+\newcommand{\moccturl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC-CT.html}
+\newcommand{\mocsdfurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-MoC-SDF.html}
+
+\newcommand{\exburl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-ExB.html}
+\newcommand{\exbabsurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-ExB-Absent.html}
+
+\newcommand{\utilurl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-Utility.html}
+\newcommand{\utilploturl}{https://forsyde.github.io/forsyde-atom/ForSyDe-Atom-Utility-Plot.html}
+
+
+\newcommand\addcase[3]{%
+  \expandafter\def\csname\string#1@case@#2\endcsname{#3}%
+}
+\newcommand\makeswitch[2][]{%
+  \newcommand#2[1]{%
+    \ifcsname\string#2@case@##1\endcsname\csname\string#2@case@##1\endcsname\else#1\fi%
+  }%
+}
+
+\makeswitch[]\reportname
+\addcase\reportname{ch:getting-started}{the report ``Getting started with \textsc{ForSyDe-Atom}'' within the same repository}
+\addcase\reportname{ch:hybrid}{the report ``Hybrid CT/DT models in \textsc{ForSyDe-Atom}'' within the same repository}
+

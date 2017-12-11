@@ -7,4 +7,10 @@
 !tex/*
 !resource
 !resource/*
+!resource/manual
+!resource/manual/*
+!resource/manual/input
+!resource/manual/input/*
+!resource/manual/sty
+!resource/manual/sty/*
 *~

@@ -2,8 +2,11 @@ MKDIR = mkdir -p
 ATOM_REPO = https://github.com/forsyde/forsyde-atom.git
 HADOCK_REPO = https://github.com/ugeorge/haddock.git
 
-LATEX_PATH := api/latex
-HTML_PATH  := api/html
+EXAMP_PATH:=/home/ugeorge/Work/forsyde-atom-examples
+API_PATH:=api
+HTML_PATH:=$(API_PATH)/html
+LATEX_PATH:=$(API_PATH)/latex
+PRETTY_PATH:=$(LATEX_PATH)/pretty
 
 # TODO! LATEX_REPO
 
@@ -27,10 +30,27 @@ PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
 
 ## FUNCTIONS ##
 
+# Check that given variables are set and all have non-empty values,
+# die with an error otherwise.
+# 1. Variable name(s) to test.
+# 2. (optional) Error message to print.
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined $1$(if $2, ($2))))
+
+# Extracts figure names from TeX files
+# 1. path to TeX file
 get-fig-names=$(shell grep -oP "(?<=begin{docimage}{).*(?=})" $(1))
+
+# Makes target PDF names with figure names extracted.
+# 1. path to TeX file
 make-pdf-targets=$(patsubst %,$(call target-format,$(1),%),$(call get-fig-names, tex/$(1).tex))
 
 ## TEMPLATES ##
+
 
 define compile-latex
 
@@ -47,24 +67,27 @@ endef
 
 ## TARGETS ##
 
-.PHONY: all html latex latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex
+.PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex
 
-all: html latex
+manual:
+	@test -f manual/input/ForSyDe-Atom.tex || echo \
+		"Manual not set up yet. Run 'make prep-manual'"
 
-latex: latex-raw html latex-pretty
 
 latex-pretty:
-	@$(MKDIR) $(LATEX_PATH)-pretty
-	@bash resource/prettify.sh "$(HTML_PATH)/forsyde-atom" "$(LATEX_PATH)/forsyde-atom" "$(LATEX_PATH)-pretty"
-	@echo "Pretty version is in: $(LATEX_PATH)-pretty"
+	@test -d $(HTML_PATH) || echo "Run 'make html' first"
+	@test -d $(LATEX_PATH) || echo "Run 'make latex-raw' first"
+	@$(MKDIR) $(PRETTY_PATH)
+	@bash resource/prettify.sh $(HTML_PATH) $(LATEX_PATH) $(PRETTY_PATH)
+	@echo "Pretty version is in: $(PRETTY_PATH)"
 
-latex-raw: pdf prep-html prep-latex Makefile $(STYLE)
+latex-raw: prep-html prep-latex Makefile $(STYLE)
 	@cd forsyde-atom \
 	&& cabal sandbox init \
 	&& cabal install --dependencies-only \
 	&& cabal configure --with-haddock=../haddock/dist/build/haddock/haddock \
 	&& (cabal haddock --haddock-options=--latex | awk 'END {print $$NF}' | xargs dirname | xargs -I {} mv {} ../$(LATEX_PATH))
-	@find $(LATEX_PATH) -type f ! -name '*.tex' -delete
+	@find $(LATEX_PATH) -type f ! \( -iname \*.tex -o -iname \*.sty \) -delete
 	@echo "Generated LaTeX API doc in $(LATEX_PATH)"
 
 
@@ -89,9 +112,9 @@ prep-pdf:
 prep-png:
 	@$(MKDIR) png
 
-prep-html:
-	@rm -rf $(HTML_PATH)	
-	@$(MKDIR) $(HTML_PATH)
+prep-html:	
+	@$(MKDIR) $(API_PATH)
+	@rm -rf $(HTML_PATH)
 	@if [ ! -d forsyde-atom ]; then \
 		git clone $(ATOM_REPO); \
 		sed -i 's/-- extra-doc-files/extra-doc-files/g' forsyde-atom/forsyde-atom.cabal; \
@@ -101,8 +124,8 @@ prep-html:
 	@if ! hscolour --version; then cabal install hscolour; fi
 
 prep-latex:
+	@$(MKDIR) $(API_PATH)
 	@rm -rf $(LATEX_PATH)
-	@$(MKDIR) $(LATEX_PATH)
 	@if [ ! -d haddock ]; then \
 		git clone $(HADOCK_REPO); \
 		cd haddock \
@@ -114,6 +137,11 @@ prep-latex:
 		&& cabal configure \
 		&& cabal build -j4; \
 	fi
+
+prep-manual: latex-raw html latex-pretty
+	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
+	cp -rf resource/manual .
+	cp -f $(PRETTY_PATH)/*.tex manual/input/
 
 ## RULES ##
 
