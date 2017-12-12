@@ -107,6 +107,8 @@ s|/\.\\|/\.\\textbackslash|g
 s|/\!\\|/\"\!\\textbackslash|g
 s|/\!|/\"\!|g
 s|/\*\^|/\*\"\^|g
+s|(image: \(fig/eqs[^)]*\)\.png)|\\haddockeq{\1\.pdf}|g
+s|(image: \(fig/[^)]*\)\.png)|\\haddockfig{\1\.pdf}|g
 ' $pretty/$file
 done
 

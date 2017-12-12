@@ -32,7 +32,7 @@ for tag in tree.xpath('//p[@class=\'src\']/a[@class=\'def\']'):
 for tag in tree.xpath('//img'):
     string = tag.attrib['src']
     if string:
-        tag.getparent().text = "(image : " + string + " )"
+        tag.getparent().text = "(image: " + string + ")"
 
 # for tag in tree.findall('//p'):
 #     string = tag.text

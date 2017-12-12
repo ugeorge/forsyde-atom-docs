@@ -3,6 +3,8 @@
 
 \usepackage{environ}
 \NewEnviron{docimage}[1]{%
+  \abovedisplayskip=0pt
+  \belowdisplayskip=0pt
   \ifthenelse{\equal{\currimage}{#1}}
   {\BODY}
   {}%

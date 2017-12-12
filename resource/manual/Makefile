@@ -31,7 +31,7 @@ title: $(TITLEPG).pdf
 doc: $(DOCNAME).pdf
 
 view: manual
-	@$(OPEN) $(DOCNAME).pdf
+	@$(OPEN) $(DOCNAME).pdf &
 
 
 api-deps:
@@ -51,15 +51,15 @@ api-deps:
 
 
 clean:
-	@$(RM) *.aux *~ *.log *.gz *.dvi *.blg *.bbl *.tmp \
+	@$(RM) -r *.aux *~ *.log *.gz *.dvi *.blg *.bbl *.tmp \
 		*.thm *.toc *.lo* *# *.mtc* *.out *.xml \
-		*.maf *.bcf comment.cut
+		*.maf *.bcf comment.cut *.idx *.ind *.ilg auto
 
 superclean: clean
 	@$(RM) -f $(TITLEPG).pdf
 	@$(RM) -f $(DOCNAME).pdf
 	@for report in $(REPORTS); do \
-		@$(MAKE) -C $@ clean-docs \
+		@$(MAKE) -C $@ clean-docs; \
 	done
 
 # Rules

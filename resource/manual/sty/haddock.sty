@@ -58,11 +58,11 @@
 
 \ExplSyntaxOn
 \NewDocumentCommand{\removequotes}{m}
- {
+{
   \tl_set:Nn \l__maxd_argument_tl { #1 }
   \tl_replace_all:Nnn \l__maxd_argument_tl { " } {  }
   \tl_use:N \l__maxd_argument_tl
- }
+}
 \tl_new:N \l__maxd_argument_tl
 \ExplSyntaxOff
 
@@ -74,24 +74,22 @@
 % the \end{tabulary} to be in the expansion of a macro, it must appear
 % literally in the document text, so Haddock inserts
 % the \end{tabulary} itself.
-\newcommand{\haddockbeginconstrs}{%
-\begin{tabulary}{\linewidth}{@{}LLJ@{}}%
-}
-
- %  \newcolumntype{M}{>{\begin{varwidth}{.5\textwidth}}l<{\end{varwidth}}}
+\newcommand{\haddockbeginconstrs}{\begin{tabulary}{\linewidth}{@{}LLJ@{}}}
+                                    
+% \newcolumntype{M}{>{\begin{varwidth}{.5\textwidth}}l<{\end{varwidth}}}
 % \newcolumntype{B}{b{2ex}}
-  
+    
 \newcommand{\haddockbeginargs}{\begin{tabulary}{\linewidth}{@{}LLJ@{}}}
-
 \newcommand{\haddocktt}[1]{{\small \texttt{#1}}}
 \newcommand{\haddockdecltt}[1]{\small\bfseries \texttt{#1}}
+
 % \newcommand{\haddockdecltt}[1]{\parbox[t][][t]{2ex}{\small\bfseries \texttt{#1}}}
                                  
 \makeatletter
 \newenvironment{haddockdesc}
-               {\list{}{\labelwidth\z@ \itemindent-\leftmargin
-                        \let\makelabel\haddocklabel}}
-               {\endlist}
+ {\list{}{\labelwidth\z@ \itemindent-\leftmargin
+                 \let\makelabel\haddocklabel}}
+ {\endlist}
 \newcommand*\haddocklabel[1]{\hspace\labelsep\haddockdecltt{#1}}
 \makeatother
 
@@ -101,8 +99,11 @@
 % ``label''.  I tried making this newline part of the label, but
 % couldn't get that to work reliably (the space seemed to stretch
 % sometimes).
-\newcommand{\haddockbegindoc}{\hfill\\[1ex]}
+\newcommand{\haddockbegindoc}{\hfill\\}
 
 % spacing between paragraphs and no \parindent looks better
 % \parskip=10pt plus2pt minus2pt
 % \setlength{\parindent}{0cm}
+
+\newcommand{\haddockeq}[1]{\par\parbox[c]{\linewidth}{\includegraphics{#1}}\par}                                 
+\newcommand{\haddockfig}[1]{\begin{figure}[h]\centering\includegraphics[scale=.7]{#1}\end{figure}}

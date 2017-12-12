@@ -28,6 +28,8 @@ PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
 PDF_FIGS  = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
 PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
 
+ATOM_VER = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
+
 ## FUNCTIONS ##
 
 # Check that given variables are set and all have non-empty values,
@@ -102,7 +104,7 @@ html: png prep-html Makefile $(STYLE)
 
 
 
-pdf: prep-pdf $(PDF_FIGS)
+pdf: prep-pdf $(STYLE) $(PDF_FIGS)
 png: pdf prep-png $(PNG_FIGS)
 
 prep-pdf:
@@ -138,14 +140,16 @@ prep-latex:
 		&& cabal build -j4; \
 	fi
 
-prep-manual: latex-raw html latex-pretty
+prep-manual: html latex-raw latex-pretty 
 	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
 	@test -d $(EXAMP_PATH) || echo \
 		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
 	@cp -rf resource/manual .
 	@cp -f $(PRETTY_PATH)/*.tex manual/input/
-	@echo "\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
-	@echo "\\newcommand*{\\AtomVersion}{kkkkkk}" |  sed 's/kkkkkk/'$(shell cd forsyde-atom && git describe --tags | sed 's|-.*$||g')'/g' >> manual/sty/atom-vars.sty
+	@mkdir -p manual/fig
+	@cp -f pdf/*.pdf manual/fig/
+	@echo "\\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
+	@echo "\\\newcommand*{\\AtomVersion}{kkkkkk}" | sed 's/kkkkkk/'"$(ATOM_VER)"'/g' >> manual/sty/atom-vars.sty
 
 ## RULES ##
 
