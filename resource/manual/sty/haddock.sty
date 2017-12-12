@@ -35,7 +35,7 @@
 % make hyperlinks in the PDF, and add an expandabale index
 % \usepackage{hyperref}
 % \usepackage{cleveref}
-\usepackage{varwidth} %for the varwidth minipage environment
+% \usepackage{varwidth} %for the varwidth minipage environment
 
 \newenvironment{haddocktitle}
   {\begin{center}\bgroup\large\bfseries}
@@ -78,8 +78,8 @@
 \begin{tabulary}{\linewidth}{@{}LLJ@{}}%
 }
 
-  \newcolumntype{M}{>{\begin{varwidth}{.5\textwidth}}l<{\end{varwidth}}}
-\newcolumntype{B}{b{2ex}}
+ %  \newcolumntype{M}{>{\begin{varwidth}{.5\textwidth}}l<{\end{varwidth}}}
+% \newcolumntype{B}{b{2ex}}
   
 \newcommand{\haddockbeginargs}{\begin{tabulary}{\linewidth}{@{}LLJ@{}}}
 
@@ -104,5 +104,5 @@
 \newcommand{\haddockbegindoc}{\hfill\\[1ex]}
 
 % spacing between paragraphs and no \parindent looks better
-\parskip=10pt plus2pt minus2pt
-\setlength{\parindent}{0cm}
+% \parskip=10pt plus2pt minus2pt
+% \setlength{\parindent}{0cm}

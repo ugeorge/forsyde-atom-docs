@@ -140,8 +140,12 @@ prep-latex:
 
 prep-manual: latex-raw html latex-pretty
 	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
-	cp -rf resource/manual .
-	cp -f $(PRETTY_PATH)/*.tex manual/input/
+	@test -d $(EXAMP_PATH) || echo \
+		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
+	@cp -rf resource/manual .
+	@cp -f $(PRETTY_PATH)/*.tex manual/input/
+	@echo "\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
+	@echo "\\newcommand*{\\AtomVersion}{kkkkkk}" |  sed 's/kkkkkk/'$(shell cd forsyde-atom && git describe --tags | sed 's|-.*$||g')'/g' >> manual/sty/atom-vars.sty
 
 ## RULES ##
 

@@ -1,26 +1,13 @@
 # Directory structure
-UTILSDIR	= ..
-STYDIR		= ..
-BIBDIR		= ../docfiles
-REPODIR         = ../..
+TEXDIR:=./input
+STYDIR:=./sty
+BIBDIR:=./
+REPODIR:=/home/ugeorge/Work/forsyde-atom-examples
 
 # Project-specific settings
 REPORTS = $(REPODIR)/getting-started $(REPODIR)/hybrid
 DOCNAME = manual
 TITLEPG = title
-
-# Dependencies
-DEPDIR   := $(REPODIR)/.deps
-
-ATOM_VER := 0.2.2
-ATOM_LIB := $(DEPDIR)/forsyde-atom-v$(ATOM_VER)
-ATOM_URL := -b $(ATOM_VER) https://github.com/forsyde/forsyde-atom.git
-
-LATEX_LIB := $(DEPDIR)/forsyde-latex
-LATEX_URL := -b dev-atom https://github.com/forsyde/forsyde-latex.git
-
-HADDOCK_LIB := $(DEPDIR)/haddock
-HADDOCK_URL := https://github.com/ugeorge/haddock.git
 
 # Tools
 MAKE = make
@@ -31,7 +18,7 @@ MKDIR = mkdir -p
 OPEN = evince
 
 BIBFILES     = $(wildcard $(BIBDIR)/*.bib)
-TEXFILES     = $(wildcard $(UTILSDIR)/*.tex)
+TEXFILES     = $(wildcard $(TEXDIR)/*.tex)
 STYLEFILES   = $(wildcard $(STYDIR)/*.sty)
 
 .PHONY: manual reports $(REPORTS) title doc view clean superclean
@@ -41,10 +28,10 @@ manual: reports title doc
 
 reports: $(REPORTS)
 title: $(TITLEPG).pdf
-doc: ../../$(DOCNAME).pdf
+doc: $(DOCNAME).pdf
 
 view: manual
-	@$(OPEN) ../../$(DOCNAME).pdf
+	@$(OPEN) $(DOCNAME).pdf
 
 
 api-deps:
@@ -70,7 +57,7 @@ clean:
 
 superclean: clean
 	@$(RM) -f $(TITLEPG).pdf
-	@$(RM) -f ../../$(DOCNAME).pdf
+	@$(RM) -f $(DOCNAME).pdf
 	@for report in $(REPORTS); do \
 		@$(MAKE) -C $@ clean-docs \
 	done
@@ -81,23 +68,23 @@ $(REPORTS):
 	@$(MAKE) -C $@ report
 
 $(TITLEPG).pdf:
-	pdflatex --shell-escape $(TITLEPG)  > /dev/null
+	pdflatex --shell-escape $(TITLEPG)  $(LOGFILE)
 
 
-../../$(DOCNAME).pdf: $(DOCNAME).tex \
+$(DOCNAME).pdf: $(DOCNAME).tex \
 		$(TEXFILES) $(STYLEFILES) $(BIBFILES) \
                 $(DOCNAME).bbl Makefile
-	pdflatex --shell-escape $(DOCNAME) > /dev/null
-	biber $(DOCNAME)  > /dev/null
-	pdflatex $(DOCNAME)  > /dev/null
+	pdflatex --shell-escape $(DOCNAME) $(LOGFILE)
+	biber $(DOCNAME)  $(LOGFILE)
+	makeindex $(DOCNAME)  $(LOGFILE)
+	pdflatex $(DOCNAME)  $(LOGFILE)
 	@while ( grep "Rerun to get cross-references" 	\
-	$(DOCNAME).log > /dev/null ); do		\
+	$(DOCNAME).log $(LOGFILE) ); do		\
 	        echo '** Re-running LaTeX **';		\
-	        pdflatex $(DOCNAME) > /dev/null;        \
+	        pdflatex $(DOCNAME) $(LOGFILE);        \
 	done
-	@mv $(DOCNAME).pdf ../../
 
 $(DOCNAME).bbl : $(DOCNAME).tex $(BIBFILES)
-	pdflatex $(DOCNAME).tex > /dev/null
-	biber $(DOCNAME) > /dev/null
+	pdflatex $(DOCNAME).tex $(LOGFILE)
+	biber $(DOCNAME) $(LOGFILE)
 

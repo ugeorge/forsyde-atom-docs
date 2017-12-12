@@ -1,15 +1,17 @@
 \documentclass{book}
-\usepackage{../atom-manual}
-\usepackage{../urls}
+\usepackage{sty/atom-manual}
+\usepackage{sty/haddock}
+\usepackage{sty/urls}
+\usepackage{sty/atom-vars}
 \usepackage{ccicons}
 
 \title{\textsc{ForSyDe-Atom}\\User Manual}
 \author{George Ungureanu}
 
-\newcommand*{\RootPath}{./}%
+\newcommand*{\RootPath}{./input}%
+\addbibresource{refs.bib}
 
-\addbibresource{../refs.bib}
-
+\makeindex
 \begin{document}
 \dominitoc
 
@@ -17,10 +19,12 @@
 \includepdf[pages={1}]{title.pdf}
 
 %License
-\begin{bottompar}
+\begin{bottompar}\small
 \begin{tabular}{p{.69\textwidth}r}
-\vspace{-.5cm} This work is licensed under a Creative Commons  Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) License & {\Huge\ccbysa}\\
+  \vspace{-.5cm} This work is licensed under a Creative Commons  Attribution-ShareAlike 4.0 Unported (CC BY-SA 4.0) License. & {\Huge\ccbysa}\\[3ex]
+  \multicolumn{2}{p{\textwidth}}{The code listed throughout this document is generated from several projects mostly licensed under the BSD-3 Clause License, unless specified otherwise.} \\
 \end{tabular}
+
 \end{bottompar}
 
 \tableofcontents
@@ -32,27 +36,27 @@
 \label{cha:list-publications}
 \markboth{List of Case Studies}{List of Case Studies}
 
-\fullcite{ungureanu17}\dotfill\cref{sec:getting-started:toy-example}
+\fullcite{Ungureanu17}\dotfill\cref{sec:getting-started:toy-example}
 
 \vspace{1ex}
-\noindent\fullcite{ungureanu18a}\dotfill\cref{sec:hybrid:rc-oscillator}
+\noindent\fullcite{Ungureanu18a}\dotfill\cref{sec:hybrid:rc-oscillator}
 
 \mainmatter
 
 \pagenumbering{arabic}
 
 \begin{refsection}
-\chapter{Introduction}
-\label{cha:introduction}
+  \chapter{Introduction}
+  \label{cha:introduction}
 
-\begin{summary}
-\input{\RootPath/abstract}
-\end{summary}
-\input{\RootPath/purpose}
-\input{\RootPath/abstract}
-\input{../usage}
+  \begin{summary}
+    \input{\RootPath/abstract}
+  \end{summary}
+  \input{\RootPath/purpose}
+  \input{\RootPath/getting}
+  \input{\RootPath/usage}
 
-\printbibliography[heading=subbibliography]
+  \printbibliography[heading=subbibliography]
 \end{refsection}
 
 
@@ -60,62 +64,94 @@
 \label{part:introduction}
 
 \begin{refsection}
-\chapter{Getting Started with {{\sc ForSyDe-Atom}}}
-\label{ch:getting-started}
-\renewcommand*{\RootPath}{../../getting-started/docs/latex}%
-\graphicspath{{../../getting-started/docs/latex/figs/}}
+  \chapter{Getting Started with {{\sc ForSyDe-Atom}}}
+  \label{ch:getting-started}
+  \renewcommand*{\RootPath}{%
+    \AtomExamplesRoot/getting-started/docs/latex}%
+  \graphicspath{{\AtomExamplesRoot/getting-started/docs/latex/figs/}}
 
-\begin{summary}
-\input{\RootPath/input/abstract}
-\end{summary}
-\minitoc
-\vspace{1ex}
-\input{\RootPath/input/info}
-\input{\RootPath/input/goals}
-\input{\RootPath/code/GettingStarted/Basics}
-\input{\RootPath/code/GettingStarted/Plot}
-\input{\RootPath/input/toy-example}
-\input{\RootPath/code/GettingStarted/TestSignals}
-\input{\RootPath/code/GettingStarted/SY}
-\input{\RootPath/code/GettingStarted/DE}
-\input{\RootPath/code/GettingStarted/CT}
-\input{\RootPath/code/GettingStarted/SDF}
-\input{\RootPath/code/GettingStarted/Polymorphic}
-\input{\RootPath/code/GettingStarted/CustomPattern}
-\input{\RootPath/input/conclusion}
+  \begin{summary}
+    \input{\RootPath/input/abstract}
+  \end{summary}
+  \minitoc
+  \vspace{1ex}
+  \input{\RootPath/input/info}
+  \input{\RootPath/input/goals}
+  \input{\RootPath/code/GettingStarted/Basics}
+  \input{\RootPath/code/GettingStarted/Plot}
+  \input{\RootPath/input/toy-example}
+  \input{\RootPath/code/GettingStarted/TestSignals}
+  \input{\RootPath/code/GettingStarted/SY}
+  \input{\RootPath/code/GettingStarted/DE}
+  \input{\RootPath/code/GettingStarted/CT}
+  \input{\RootPath/code/GettingStarted/SDF}
+  \input{\RootPath/code/GettingStarted/Polymorphic}
+  \input{\RootPath/code/GettingStarted/CustomPattern}
+  \input{\RootPath/input/conclusion}
 
-\printbibliography[heading=subbibliography]
+  \printbibliography[heading=subbibliography]
 \end{refsection}
 
 \begin{refsection}
-\chapter{Hybrid CT/DT Models in {{\sc ForSyDe-Atom}}}
-\label{ch:hybrid}
-\renewcommand*{\RootPath}{../../hybrid/docs/latex}%
-\graphicspath{{../../hybrid/docs/latex/figs/}}
+  \chapter{Hybrid CT/DT Models in {{\sc ForSyDe-Atom}}}
+  \label{ch:hybrid}
+  \renewcommand*{\RootPath}{\AtomExamplesRoot/hybrid/docs/latex}%
+  \graphicspath{{\AtomExamplesRoot/hybrid/docs/latex/figs/}}
 
-\begin{summary}
-\input{\RootPath/input/abstract}
-\end{summary}
-\minitoc
-\vspace{1ex}
-\input{\RootPath/input/info}
-\input{\RootPath/input/goals}
-\input{\RootPath/code/Hybrid/RCOsc}
-\input{\RootPath/input/conclusion}
+  \begin{summary}
+    \input{\RootPath/input/abstract}
+  \end{summary}
+  \minitoc
+  \vspace{1ex}
+  \input{\RootPath/input/info}
+  \input{\RootPath/input/goals}
+  \input{\RootPath/code/Hybrid/RCOsc}
+  \input{\RootPath/input/conclusion}
 
-\printbibliography[heading=subbibliography]
+  \printbibliography[heading=subbibliography]
 \end{refsection}
 
-\part{API Documentation}
+\part{Tools \& Libraries Documentation}
 \label{part:api-documentation}
 
-\begin{summary}
-  This section is currently under construction. For the moment, please refer to online API documentation at \url{https://forsyde.github.io/forsyde-atom/}
-\end{summary}
+\chapter{The \textsc{ForSyDe-Atom} Standard Library}
+\label{ch:forsyde-atom}
+
+\begin{refsection}
+  \parskip=10pt plus2pt minus2pt
+  \setlength{\parindent}{0cm}
+
+  \begin{summary}
+    \input{input/forsyde-atom-abstract}
+  \end{summary}
+  \minitoc
+  % \vspace{1ex}
+  \input{input/forsyde-atom}
+  \input{input/ForSyDe-Atom}
+  \input{input/ForSyDe-Atom-ExB}
+  \input{input/ForSyDe-Atom-ExB-Absent}
+  \input{input/ForSyDe-Atom-MoC}
+  \input{input/ForSyDe-Atom-MoC-Stream}
+  \input{input/ForSyDe-Atom-MoC-Time}
+  \input{input/ForSyDe-Atom-MoC-TimeStamp}
+  \input{input/ForSyDe-Atom-MoC-CT}
+  \input{input/ForSyDe-Atom-MoC-DE}
+  \input{input/ForSyDe-Atom-MoC-SDF}
+  \input{input/ForSyDe-Atom-MoC-SY}
+  \input{input/ForSyDe-Atom-Skeleton}
+  \input{input/ForSyDe-Atom-Skeleton-Vector}
+  % \input{input/ForSyDe-Atom-Utility}
+  \input{input/ForSyDe-Atom-Utility-Plot}
+  \input{input/ForSyDe-Atom-Utility-Tuple}
+  
+  \printbibliography[heading=subbibliography]
+  \printindex
+\end{refsection}
 
 \end{document}
 
 %%% Local Variables:
+%%% TeX-command-default: "Make"
 %%% mode: latex
 %%% TeX-master: t
 %%% End:
