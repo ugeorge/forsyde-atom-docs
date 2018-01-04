@@ -13,4 +13,6 @@
 !resource/manual/input/*
 !resource/manual/sty
 !resource/manual/sty/*
+!atom-docplots
+!atom-docplots/*
 *~

@@ -109,7 +109,12 @@ s|/\!|/\"\!|g
 s|/\*\^|/\*\"\^|g
 s|(image: \(fig/eqs[^)]*\)\.png)|\\haddockeq{\1\.pdf}|g
 s|(image: \(fig/[^)]*\)\.png)|\\haddockfig{\1\.pdf}|g
+s|\\href{ForSyDe\-Atom\-MoC\.html\#context}{execution context}|execution context (see \\cref{module:ForSyDe.Atom.MoC})|g
 ' $pretty/$file
+
+perl -0777 -i -pe 's/\\textbf\{IMPORTANT.*?\\par/\\begin{mdframed}[style=reminder,frametitle=Reminder]Make sure to consult naming conventions in  \\cref{sec:forsyde-atom:naming-convention} in order to interpret the names and type signatures correctly.\\end{mdframed}\\par/igs' $pretty/$file
+
+perl -0777 -i -pe 's/\\begin\{quote\}\n\{\\haddockverb\\begin\{verbatim\}(.*?)\\end\{verbatim\}\}\n\\end\{quote\}/\\begin\{interactive\}$1\\end\{interactive\}/igs' $pretty/$file
 done
 
 # s|{\\char '"'"'46}|\\\&|g

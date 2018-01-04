@@ -15,8 +15,8 @@ PRETTY_PATH:=$(LATEX_PATH)/pretty
 # 	eqs-skel skel eqs-skel-vector skel-vector-func \
 # 	skel-vector-comm
 
-FILES = eqs-exb \
-	eqs-moc moc moc-sy moc-de moc-sdf \
+FILES = eqs-exb misc \
+	eqs-moc moc moc-sy moc-de moc-ct moc-sdf \
 	eqs-skel skel eqs-skel-vector skel-vector-func
 
 target-format=pdf/$(1)-$(2).pdf
@@ -27,6 +27,9 @@ STYLE = $(wildcard tex/*.sty)
 PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
 PDF_FIGS  = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
 PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
+
+DUMP_SRC = atom-docplots/Main.hs
+DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
 
 ATOM_VER = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
 
@@ -107,9 +110,22 @@ html: png prep-html Makefile $(STYLE)
 pdf: prep-pdf $(STYLE) $(PDF_FIGS)
 png: pdf prep-png $(PNG_FIGS)
 
-prep-pdf:
+prep-pdf: dump-plots
 	@$(MKDIR) pdf
 # TODO	LATEX_REPO
+
+dump-plots: $(DUMP_BIN)
+	@cd atom-docplots && cabal build -j4
+	./$(DUMP_BIN)
+	@rm -rf tex/data
+	@mv data tex
+
+$(DUMP_BIN):
+	@cd atom-docplots \
+	  && cabal sandbox init \
+	  && cabal sandbox add-source ../forsyde-atom \
+	  && cabal install \
+	  && cabal build -j4
 
 prep-png:
 	@$(MKDIR) png
@@ -144,7 +160,7 @@ prep-manual: html latex-raw latex-pretty
 	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
 	@test -d $(EXAMP_PATH) || echo \
 		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
-	@cp -rf resource/manual .
+#	@cp -rf resource/manual .
 	@cp -f $(PRETTY_PATH)/*.tex manual/input/
 	@mkdir -p manual/fig
 	@cp -f pdf/*.pdf manual/fig/
