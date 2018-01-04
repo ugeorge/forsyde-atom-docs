@@ -1,8 +1,7 @@
 MKDIR = mkdir -p
-ATOM_REPO = https://github.com/forsyde/forsyde-atom.git
+ATOM_REPO = https://github.com/ugeorge/forsyde-atom.git
 HADOCK_REPO = https://github.com/ugeorge/haddock.git
 
-EXAMP_PATH:=/home/ugeorge/Work/forsyde-atom-examples
 API_PATH:=api
 HTML_PATH:=$(API_PATH)/html
 LATEX_PATH:=$(API_PATH)/latex
@@ -23,6 +22,9 @@ target-format=pdf/$(1)-$(2).pdf
 
 ##################### DO NOT CHANGE FROM HERE #####################
 
+include .env
+# export $(shell sed 's/=.*//' envfile)
+
 STYLE = $(wildcard tex/*.sty)
 PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
 PDF_FIGS  = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
@@ -31,7 +33,7 @@ PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
 DUMP_SRC = atom-docplots/Main.hs
 DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
 
-ATOM_VER = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
+ATOM_VER    = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
 
 ## FUNCTIONS ##
 
@@ -72,7 +74,7 @@ endef
 
 ## TARGETS ##
 
-.PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex
+.PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex prep-atom
 
 manual:
 	@test -f manual/input/ForSyDe-Atom.tex || echo \
@@ -120,7 +122,7 @@ dump-plots: $(DUMP_BIN)
 	@rm -rf tex/data
 	@mv data tex
 
-$(DUMP_BIN):
+$(DUMP_BIN): prep-atom
 	@cd atom-docplots \
 	  && cabal sandbox init \
 	  && cabal sandbox add-source ../forsyde-atom \
@@ -130,16 +132,20 @@ $(DUMP_BIN):
 prep-png:
 	@$(MKDIR) png
 
-prep-html:	
+prep-html: prep-atom
 	@$(MKDIR) $(API_PATH)
 	@rm -rf $(HTML_PATH)
+	@if ! haddock --version; then cabal install haddock; fi
+	@if ! hscolour --version; then cabal install hscolour; fi
+
+prep-atom:
 	@if [ ! -d forsyde-atom ]; then \
 		git clone $(ATOM_REPO); \
 		sed -i 's/-- extra-doc-files/extra-doc-files/g' forsyde-atom/forsyde-atom.cabal; \
 		mkdir -p forsyde-atom/fig; \
+		touch forsyde-atom/fig/phony.png; \
 	fi
-	@if ! haddock --version; then cabal install haddock; fi
-	@if ! hscolour --version; then cabal install hscolour; fi
+
 
 prep-latex:
 	@$(MKDIR) $(API_PATH)
@@ -186,3 +192,13 @@ clean:
 
 remove: clean
 	rm -rf pdf png forsyde-atom forsyde-latex haddock
+
+.env:
+	@if [ ! -f .env ]; then \
+		echo "Where is the forsyde-atom-examples dir? "; \
+		read thePath; \
+		readlink -f $thePath > .env; \
+	fi
+
+test:
+	echo 
