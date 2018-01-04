@@ -29,10 +29,13 @@
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-examp-i2.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+    \path (sigplot.e2) edge[s,-|-,->] (p1.w2);
     \begin{signalsCT}[timestamps=3.14, grid=3.14, outputs={p1.east}]{10}
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-examp-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);
   \end{tikzpicture}
 \end{docimage} 
 
@@ -44,10 +47,12 @@
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-delay-i1.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
     \begin{signalsCT}[timestamps=3.14, grid=3.14, outputs={p1.east}]{10}
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-delay-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage} 
 
@@ -57,13 +62,16 @@
     \begin{signalsCT}[timestamps=3.14, grid=3.14, inputs={p1.west}]{10}
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-delayp-i1.flx}
-      \signalCT*[outline,ymin=0,ymax=1]{%
+      \signalCT*[outline,ymin=-1,ymax=1]{%
         data/ct-delayp-i2.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+    \path (sigplot.e2) edge[s,-|-,->] (p1.w2);
     \begin{signalsCT}[timestamps=3.14, grid=3.14, outputs={p1.east}]{10}
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-delayp-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage} 
 
@@ -76,12 +84,16 @@
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-comb-i2.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+    \path (sigplot.e2) edge[s,-|-,->] (p1.w2);
     \begin{signalsCT}[timestamps=3.14, grid=3.14, outputs={p1.east}]{10}
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-comb-o1.flx}
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-comb-o2.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
+    \signal[-|-] (p1.e2) -> (sigplot.w2);
   \end{tikzpicture}
 \end{docimage} 
 
@@ -92,6 +104,7 @@
       \signalCT*[outline,ymin=0,ymax=4]{%
         data/ct-constant-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage} 
 
@@ -104,6 +117,8 @@
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-infinite-o2.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
+    \signal[-|-] (p1.e2) -> (sigplot.w2);    
   \end{tikzpicture}
 \end{docimage}
 
@@ -114,6 +129,7 @@
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-generate-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage} 
 
@@ -124,6 +140,7 @@
       \signalCT*[outline,ordinate=0,ymin=0,ymax=2]{%
         data/ct-generate1-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage}
 
@@ -134,10 +151,12 @@
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-stated-i1.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
     \begin{signalsCT}[timestamps=5, grid=5, outputs={p1.east}]{10}
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-stated-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage} 
 
@@ -148,10 +167,12 @@
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-state-i1.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
     \begin{signalsCT}[timestamps=5, grid=5, outputs={p1.east}]{10}
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-state-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage} 
 
@@ -162,10 +183,12 @@
       \signalCT*[outline,ymin=0,ymax=1]{%
         data/ct-moore-i1.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
     \begin{signalsCT}[timestamps=5, grid=5, outputs={p1.east}]{10}
       \signalCT*[outline,ymin=0,ymax=3]{%
         data/ct-moore-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage}
 
@@ -176,10 +199,12 @@
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-mealy-i1.flx}
     \end{signalsCT}
+    \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
     \begin{signalsCT}[timestamps=5, grid=3.14, outputs={p1.east}]{10}
       \signalCT*[outline,ordinate=0,ymin=-1,ymax=1]{%
         data/ct-mealy-o1.flx}
     \end{signalsCT}
+    \signal[-|-] (p1.e1) -> (sigplot.w1);    
   \end{tikzpicture}
 \end{docimage}
 

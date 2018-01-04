@@ -16,7 +16,8 @@ PRETTY_PATH:=$(LATEX_PATH)/pretty
 
 FILES = eqs-exb misc \
 	eqs-moc moc moc-sy moc-de moc-ct moc-sdf \
-	eqs-skel skel eqs-skel-vector skel-vector-func
+	eqs-skel skel eqs-skel-vector skel-vector-func \
+	skel-vector-comm
 
 target-format=pdf/$(1)-$(2).pdf
 
@@ -79,6 +80,7 @@ endef
 manual:
 	@test -f manual/input/ForSyDe-Atom.tex || echo \
 		"Manual not set up yet. Run 'make prep-manual'"
+	make -C manual
 
 
 latex-pretty:
@@ -195,10 +197,10 @@ remove: clean
 
 .env:
 	@if [ ! -f .env ]; then \
-		echo "Where is the forsyde-atom-examples dir? "; \
-		read thePath; \
-		readlink -f $thePath > .env; \
+		read -p "Where is the forsyde-atom-examples dir? " examp; \
+		examp_dir=`readlink -f $$examp`; \
+		echo "EXAMP_PATH := $$examp_dir" > .env; \
 	fi
 
 test:
-	echo 
+	echo $(EXAMP_PATH)

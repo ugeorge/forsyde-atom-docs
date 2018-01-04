@@ -115,7 +115,13 @@ s|\\href{ForSyDe\-Atom\-MoC\.html\#context}{execution context}|execution context
 perl -0777 -i -pe 's/\\textbf\{IMPORTANT.*?\\par/\\begin{mdframed}[style=reminder,frametitle=Reminder]Make sure to consult naming conventions in  \\cref{sec:forsyde-atom:naming-convention} in order to interpret the names and type signatures correctly.\\end{mdframed}\\par/igs' $pretty/$file
 
 perl -0777 -i -pe 's/\\begin\{quote\}\n\{\\haddockverb\\begin\{verbatim\}(.*?)\\end\{verbatim\}\}\n\\end\{quote\}/\\begin\{interactive\}$1\\end\{interactive\}/igs' $pretty/$file
+
+perl -0777 -i -pe 's/\n\n>>> /\nλ> /igs' $pretty/$file
+perl -0777 -i -pe 's/>>> /λ> /igs' $pretty/$file
 done
+
+perl -0777 -i -pe 's/\\haddockfig\{(.*?)\}\s*\\haddockfig\{(.*?)\}\\par/\\haddockdoublefig\{$1\}\{$2\}\\par/igs' $pretty/ForSyDe-Atom-Skeleton-Vector.tex
+perl -0777 -i -pe 's/\\haddockdoublefig\{fig\/skel-vector-comm-zipx\.pdf\}/\\haddockfig\{fig\/skel-vector-comm-zipx\.pdf\}/igs' $pretty/ForSyDe-Atom-Skeleton-Vector.tex
 
 # s|{\\char '"'"'46}|\\\&|g
 # s|{\\char '"'"'134}|\\textbackslash|g
