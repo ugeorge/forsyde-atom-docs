@@ -52,6 +52,33 @@ This class is instantiated by a set of categorical types,
  of the frameworks collected in \cite{Gorlatch03}.\par
                  
 \haddockpremethods{}\textbf{Methods}
+\begin{haddockdesc}
+\item[\begin{tabular}{@{}l}\haddockid{(=.=)}\ ::\ (a\ ->\ b)\ ->\ c\ a\ ->\ c\ b\ \end{tabular}]
+\haddockbegindoc
+Atom which maps a function on each element of a structure (i.e. categorical type), defined as:\haddockeq{fig/eqs-skel-atom-dot.pdf}\haddockid{=.=} together with \haddockid{=*=} form the map pattern.\par
+
+\item[\begin{tabular}{@{}l}\haddockid{(=*=)}\ ::\ c\ (a\ ->\ b)\ ->\ c\ a\ ->\ c\ b\ \end{tabular}]
+\haddockbegindoc
+Atom which applies the functions contained by as structure (i.e. categorical type), on the elements of another structure, defined as:\haddockeq{fig/eqs-skel-atom-star.pdf}\haddockid{=.=} together with \haddockid{=*=} form the map pattern.\par
+
+\item[\begin{tabular}{@{}l}\haddockid{(=\textbackslash=)}\ ::\ (a\ ->\ a\ ->\ a)\ ->\ c\ a\ ->\ a\ \end{tabular}]
+\haddockbegindoc
+Atom which reduces a structure to an element based on an \emph{associative} function, defined as:\haddockeq{fig/eqs-skel-atom-red.pdf}\par
+
+\item[\begin{tabular}{@{}l}\haddockid{(=<<=)}\ \end{tabular}]
+\haddockbegindoc
+Skeleton which \emph{pipes} an element through all the functions contained by a structure. N.B.: this is not an atom. It has an implicit definition which might be augmented by instances of this class to include edge cases.\haddockeq{fig/eqs-skel-pattern-pipe.pdf}As the composition operation is not associative, we cannot treat pipe as a true reduction. Alas, it can still be exploited in parallel since it exposes another type of parallelism: time parallelism.\par
+
+\item[\begin{tabular}{@{}l}\haddockid{first}\ ::\ c\ a\ ->\ a\ \end{tabular}]
+\haddockbegindoc
+Returns the first element in a structure.N.B.: this is not an atom. It has an implicit definition which might be replaced by instances of this class with a more efficient implementation.\haddockeq{fig/eqs-skel-pattern-first.pdf}\par
+
+\item[\begin{tabular}{@{}l}\haddockid{last}\ ::\ c\ a\ ->\ a\ \end{tabular}]
+\haddockbegindoc
+Returns the last element in a structure.N.B.: this is not an atom. It has an implicit definition which might be replaced by instances of this class with a more efficient implementation.\haddockeq{fig/eqs-skel-pattern-last.pdf}\par
+
+\end{haddockdesc}
+
 
 \item[\begin{tabular}{@{}l}
 instance\ Skeleton\ Vector
@@ -59,6 +86,7 @@ instance\ Skeleton\ Vector
 Ensures that \haddockid{Vector} is a structure associated with the Skeleton Layer.\par
 
 \end{haddockdesc}
+
 \subsection{Skeleton constructors}
 Patterns of in the skeleton layer are provided, like all other
  patterns in ForSyDe-Atom, as constructors. If the layer below

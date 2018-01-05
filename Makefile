@@ -175,6 +175,17 @@ prep-manual: html latex-raw latex-pretty
 	@echo "\\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
 	@echo "\\\newcommand*{\\AtomVersion}{kkkkkk}" | sed 's/kkkkkk/'"$(ATOM_VER)"'/g' >> manual/sty/atom-vars.sty
 
+prep-manual-quick: pdf 
+	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
+	@test -d $(EXAMP_PATH) || echo \
+		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
+	@cp -rf resource/manual .
+	@mkdir -p manual/fig
+	@cp -f pdf/*.pdf manual/fig/
+	@echo "\\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
+	@echo "\\\newcommand*{\\AtomVersion}{kkkkkk}" | sed 's/kkkkkk/'"$(ATOM_VER)"'/g' >> manual/sty/atom-vars.sty
+
+
 ## RULES ##
 
 # generate rules for PDF figures

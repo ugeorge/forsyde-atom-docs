@@ -56,7 +56,7 @@ done
 # grabbing methods
 echo "Grabbing class methods"
 
-files="ForSyDe-Atom ForSyDe-Atom-MoC ForSyDe-Atom-ExB ForSyDe-Atom-Utility-Plot"
+files="ForSyDe-Atom ForSyDe-Atom-MoC ForSyDe-Atom-ExB ForSyDe-Atom-Skeleton ForSyDe-Atom-Utility-Plot"
 
 function process() {
     methods=''
@@ -101,6 +101,7 @@ file=$(basename $f)
 sed -i '
 s|-&-|-\\\&-|g
 s|/&\\|/\\\&\\textbackslash|g
+s|=\\=|=\\textbackslash=|g
 s|/\\&\\|/\\\&\\textbackslash|g
 s|/\*\\|/\*\\textbackslash|g
 s|/\.\\|/\.\\textbackslash|g
@@ -118,6 +119,7 @@ perl -0777 -i -pe 's/\\begin\{quote\}\n\{\\haddockverb\\begin\{verbatim\}(.*?)\\
 
 perl -0777 -i -pe 's/\n\n>>> /\nλ> /igs' $pretty/$file
 perl -0777 -i -pe 's/>>> /λ> /igs' $pretty/$file
+perl -0777 -i -pe 's/\\ Source\\ /\\ /igs' $pretty/$file
 done
 
 perl -0777 -i -pe 's/\\haddockfig\{(.*?)\}\s*\\haddockfig\{(.*?)\}\\par/\\haddockdoublefig\{$1\}\{$2\}\\par/igs' $pretty/ForSyDe-Atom-Skeleton-Vector.tex

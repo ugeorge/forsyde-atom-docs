@@ -105,5 +105,15 @@
 % \parskip=10pt plus2pt minus2pt
 % \setlength{\parindent}{0cm}
 
-\newcommand{\haddockeq}[1]{\par\parbox[c]{\linewidth}{\includegraphics{#1}}\par}                                 
-\newcommand{\haddockfig}[1]{\begin{figure}[h]\centering\includegraphics[scale=.7]{#1}\end{figure}}
+\newcommand{\haddockeq}[1]{\par\parbox[c]{\linewidth}{\includegraphics{#1}}\par}                                  
+\newcommand{\haddockfig}[1]{\begin{figure}[h]\centering\includegraphics[scale=.7]{#1}\end{figure}}               
+% \newcommand{\haddockdoublefig}[2]{\begin{figure}[h]\centering\includegraphics[scale=.7]{#1}\hspace{4ex}\includegraphics[scale=.7]{#2}\end{figure}}
+
+\newcommand{\haddockdoublefig}[2]{
+\begin{minipage}{.9\linewidth}
+  \centering
+  \raisebox{-0.5\height}{\includegraphics[scale=.7]{#1}}
+  \hspace*{.2in}
+  \raisebox{-0.5\height}{\includegraphics[scale=.7]{#2}}
+\end{minipage}
+}

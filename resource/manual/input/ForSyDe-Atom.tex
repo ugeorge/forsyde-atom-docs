@@ -177,7 +177,7 @@ Extended behavior atoms are functions of these types, defined as
 
 \haddockpremethods{}\textbf{Methods}
 \begin{haddockdesc}
-\item[\begin{tabular}{@{}l}\haddockid{extend}\ ::\ a\ ->\ b\ a\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{extend}\ ::\ a\ ->\ b\ a\ \end{tabular}]
 \haddockbegindoc
 Extends a value (from a layer below) with a set of symbols with known semantics, as described by a type instantiating this class.\par
 
@@ -189,11 +189,11 @@ Basic functor operator. Lifts a function (from a layer below) into the domain of
 \haddockbegindoc
 Applicative operator. Defines a res between two extended behavior symbols.\haddockeq{fig/eqs-exb-atom-app.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(/\&\textbackslash)}\ ::\ b\ Bool\ ->\ b\ a\ ->\ b\ a\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(/\&\textbackslash)}\ ::\ b\ Bool\ ->\ b\ a\ ->\ b\ a\ \end{tabular}]
 \haddockbegindoc
 Predicate operator. Generates a defined behavior based on an extended Boolean predicate.\haddockeq{fig/eqs-exb-atom-phi.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(/"!\textbackslash)}\ ::\ a\ ->\ b\ a\ ->\ a\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(/"!\textbackslash)}\ ::\ a\ ->\ b\ a\ ->\ a\ \end{tabular}]
 \haddockbegindoc
 Degrade operator. Degrades a behavior-extended value into a non-extended one (from a layer below), based on a kernel value. Used also to throw exceptions.\haddockeq{fig/eqs-exb-atom-deg.pdf}\par
 
@@ -524,31 +524,31 @@ this artifice was masked using the generic type families \haddockid{Fun}
 
 \haddockpremethods{}\textbf{Methods}
 \begin{haddockdesc}
-\item[\begin{tabular}{@{}l}\ \haddockid{Fun}\ e\ a\ b\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\ \haddockid{Fun}\ e\ a\ b\ \end{tabular}]
 \haddockbegindoc
 This is a type family alias for a context-bound function passed as an argument to a MoC atom. In the most simple case it can be regarded as an enhanced -> type operator. While hiding the explicit definition of arguments, this implementation choice certainly has its advantages in avoiding unnecessary or redundant type constructors (see version 0.1.1 and prior). Aliases are replaced at compile time, thus not affecting run-time performance.\haddockeq{fig/eqs-moc-atom-function.pdf}\par
 
-\item[\begin{tabular}{@{}l}\ \haddockid{Ret}\ e\ b\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\ \haddockid{Ret}\ e\ b\ \end{tabular}]
 \haddockbegindoc
 As with \haddockid{Fun}, this alias hides a context-bound value (e.g. function return). Although the definition seems to be redundant with \haddockid{Fun}, this alias is needed for utilities to recreate clean types again (see \haddockid{-*}).\haddockeq{fig/eqs-moc-atom-result.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(-.-)}\ ::\ Fun\ e\ a\ b\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ b)\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(-.-)}\ ::\ Fun\ e\ a\ b\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ b)\ \end{tabular}]
 \haddockbegindoc
 This atom is mapping a function on values (in the presence of a context) to a signal, i.e. stream of tagged events. As ForSyDe deals with \emph{determinate}, \emph{functional} processes, this atom defines the (only) \emph{behavior} of a process in rapport to one input signal  \cite{Lee98}.\haddockeq{fig/eqs-moc-atom-dot.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(-*-)}\ ::\ Stream\ (e\ (Fun\ e\ a\ b))\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ b)\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(-*-)}\ ::\ Stream\ (e\ (Fun\ e\ a\ b))\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ b)\ \end{tabular}]
 \haddockbegindoc
 This atom synchronizes two signals, one carrying functions on values (in the presence of a context), and the other containing values, during which it applies the former on the latter. As concerning the process created, this atom defines a \emph{relation} between two signals  \cite{Lee98}.\haddockeq{fig/eqs-moc-atom-star.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(-*)}\ ::\ Stream\ (e\ (Ret\ e\ b))\ ->\ Stream\ (e\ b)\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(-*)}\ ::\ Stream\ (e\ (Ret\ e\ b))\ ->\ Stream\ (e\ b)\ \end{tabular}]
 \haddockbegindoc
 Artificial \emph{utility} which drops the context and/or partitioning yielding a clean signal type.\haddockeq{fig/eqs-moc-atom-post.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(-<-)}\ ::\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(-<-)}\ ::\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ \end{tabular}]
 \haddockbegindoc
 This atom appends a (partition of) events at the beginning of a signal. This atom is necessary to ensure \emph{complete partial order} of a signal and assures the \emph{least upper bound} necessary for example in the evaluation of feedback loops  \cite{Lee98}.\haddockeq{fig/eqs-moc-atom-pre.pdf}Notice the difference between the formal and the implemented type signatures. In the implementation the value/partition is wrapped inside an event type to enable smooth composition. You might also notice the type for the initial event(s) as being wrapped inside a signal constructor. This allows defining an DSL for this layer which is centered around signals exclusively, while also enabling to define atoms as homomorphisms to certain extent  \cite{Bird97}. Certain MoCs might have additional constraints on the first operand to be finite.\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(-\&-)}\ ::\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(-\&-)}\ ::\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ ->\ Stream\ (e\ a)\ \end{tabular}]
 \haddockbegindoc
 This atom allows the manipulation of tags in a signal in a restrictive way which preserves \emph{monotonicity} and \emph{continuity} in a process  \cite{Lee98}, namely by phase-shifting all tags in a signal with the appropriate metric corresponding to each MoC. Thus it preserves the characteristic function intact  \cite{Sander04}.\haddockeq{fig/eqs-moc-atom-phi.pdf}As with the \haddockid{-<-} atom, we can justify the type signature for smooth composition and the definition of atoms as homomorphisms to certain extent. This in turn allows the interpretation of the \haddockid{-\haddockpremethods{}\textbf{Methods}-} operator as aligning the phases of two signals: the second operand is aligned based on the first.\par
 
@@ -652,27 +652,27 @@ This class is instantiated by a set of categorical types,
                  
 \haddockpremethods{}\textbf{Methods}
 \begin{haddockdesc}
-\item[\begin{tabular}{@{}l}\haddockid{(=.=)}\ ::\ (a\ ->\ b)\ ->\ c\ a\ ->\ c\ b\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(=.=)}\ ::\ (a\ ->\ b)\ ->\ c\ a\ ->\ c\ b\ \end{tabular}]
 \haddockbegindoc
 Atom which maps a function on each element of a structure (i.e. categorical type), defined as:\haddockeq{fig/eqs-skel-atom-dot.pdf}\haddockid{=.=} together with \haddockid{=*=} form the map pattern.\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(=*=)}\ ::\ c\ (a\ ->\ b)\ ->\ c\ a\ ->\ c\ b\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(=*=)}\ ::\ c\ (a\ ->\ b)\ ->\ c\ a\ ->\ c\ b\ \end{tabular}]
 \haddockbegindoc
 Atom which applies the functions contained by as structure (i.e. categorical type), on the elements of another structure, defined as:\haddockeq{fig/eqs-skel-atom-star.pdf}\haddockid{=.=} together with \haddockid{=*=} form the map pattern.\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(=\=)}\ ::\ (a\ ->\ a\ ->\ a)\ ->\ c\ a\ ->\ a\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(=\textbackslash=)}\ ::\ (a\ ->\ a\ ->\ a)\ ->\ c\ a\ ->\ a\ \end{tabular}]
 \haddockbegindoc
 Atom which reduces a structure to an element based on an \emph{associative} function, defined as:\haddockeq{fig/eqs-skel-atom-red.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{(=<<=)}\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{(=<<=)}\ \end{tabular}]
 \haddockbegindoc
 Skeleton which \emph{pipes} an element through all the functions contained by a structure. N.B.: this is not an atom. It has an implicit definition which might be augmented by instances of this class to include edge cases.\haddockeq{fig/eqs-skel-pattern-pipe.pdf}As the composition operation is not associative, we cannot treat pipe as a true reduction. Alas, it can still be exploited in parallel since it exposes another type of parallelism: time parallelism.\par
 
-\item[\begin{tabular}{@{}l}\haddockid{first}\ ::\ c\ a\ ->\ a\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{first}\ ::\ c\ a\ ->\ a\ \end{tabular}]
 \haddockbegindoc
 Returns the first element in a structure.N.B.: this is not an atom. It has an implicit definition which might be replaced by instances of this class with a more efficient implementation.\haddockeq{fig/eqs-skel-pattern-first.pdf}\par
 
-\item[\begin{tabular}{@{}l}\haddockid{last}\ ::\ c\ a\ ->\ a\ Source\ \end{tabular}]
+\item[\begin{tabular}{@{}l}\haddockid{last}\ ::\ c\ a\ ->\ a\ \end{tabular}]
 \haddockbegindoc
 Returns the last element in a structure.N.B.: this is not an atom. It has an implicit definition which might be replaced by instances of this class with a more efficient implementation.\haddockeq{fig/eqs-skel-pattern-last.pdf}\par
 
@@ -685,6 +685,7 @@ instance\ Skeleton\ Vector
 Ensures that \haddockid{Vector} is a structure associated with the Skeleton Layer.\par
 
 \end{haddockdesc}
+
 \subsection{Utilities}
 The \haddockid{Atom} module exports a set of utility functions,
  mainly for aiding the designer to avoid working with zipped
@@ -739,11 +740,11 @@ The operator convention is \haddocktt{(|+<+)}, where the number of \haddocktt{|}
  number of \haddocktt{<} + 1 is the order \emph{n} of the n-tuple.\par
 \haddocktt{ForSyDe.Atom.Utility} exports the constructors below. Please
  follow the examples in the source code if they do not suffice:\par
-\begin{interactive}
+\begin{code}
    |<,    |<<,    |<<<,    |<<<<,    |<<<<<,    |<<<<<<,    |<<<<<<<,    |<<<<<<<<,
   ||<,   ||<<,   ||<<<,   ||<<<<,   ||<<<<<,   ||<<<<<<,   ||<<<<<<<,   ||<<<<<<<<,
  |||<,  |||<<,  |||<<<,  |||<<<<,  |||<<<<<,  |||<<<<<<,  |||<<<<<<<,  |||<<<<<<<<,  
-||||<, ||||<<, ||||<<<, ||||<<<<, ||||<<<<<, ||||<<<<<<, ||||<<<<<<<, ||||<<<<<<<<, \end{interactive}
+||||<, ||||<<, ||||<<<, ||||<<<<, ||||<<<<<, ||||<<<<<<, ||||<<<<<<<, ||||<<<<<<<<, \end{code}
 Example:\par
 \begin{interactive}
 λ> :set -XPostfixOperators

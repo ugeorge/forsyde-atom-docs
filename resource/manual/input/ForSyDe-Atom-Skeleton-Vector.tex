@@ -41,10 +41,10 @@ The  \haddockid{Vector}, or at least its interpretation, is the
  suggestive in the context of process networks.\par
 According to \cite{Bird97}, \haddockid{Vector}
  should be implemented as following:\par
-\begin{interactive}
+\begin{code}
 data Vector a = Null                   -- null element
               | Unit a                 -- singleton vector
-              | Vector a <++> Vector a -- concatenate two vectors\end{interactive}
+              | Vector a <++> Vector a -- concatenate two vectors\end{code}
 This construction suggests the possibility of splitting a \haddockid{Vector}
  into multiple parts and evaluating it in parallel. Due to reasons
  of efficiency, and to ensure that the structure is flat and
@@ -454,10 +454,10 @@ Constructors: \haddocktt{mesh}, \haddocktt{mesh{\char 91}1-4{\char 93}}.\par
 λ> let s1 = SY.signal [1,2,3,4]
 λ> let vs = vector [s1, s1, s1]
 λ> mesh (comb21 (+)) vs vs
-<<{20,40,60,80},{10,20,30,40},{4,8,12,16}>,<{10,20,30,40},{6,12,18,24},{3,6,9,12}>,<{4,8,12,16},{3,6,9,12},{2,4,6,8}>>
+<<{20,40,60,80},{10,20,30,40},{4,8,12,16}>,<{10,20,30,40},{6,12,18,24},{3,6,9,12}>,<{4,8,12,16}, {3,6,9,12},{2,4,6,8}>>
 λ> let vv = vector [vector [1,-1,1], vector [-1,1,-1], vector [1,-1,1]]
 λ> mesh1 (\x -> comb21 (\y z-> x*(y+z))) vv vs vs
-<<{16,32,48,64},{8,16,24,32},{-2,-4,-6,-8}>,<{8,16,24,32},{-6,-12,-18,-24},{-3,-6,-9,-12}>,<{-2,-4,-6,-8},{-3,-6,-9,-12},{2,4,6,8}>>
+<<{16,32,48,64},{8,16,24,32},{-2,-4,-6,-8}>,<{8,16,24,32},{-6,-12,-18,-24},{-3,-6,-9,-12}>, <{-2,-4,-6,-8},{-3,-6,-9,-12},{2,4,6,8}>>
 
 \end{interactive}\haddockeq{fig/eqs-skel-vector-mesh.pdf}\par
            \haddockdoublefig{fig/skel-vector-func-mesh.pdf}{fig/skel-vector-func-mesh-net.pdf}\par
@@ -835,8 +835,8 @@ The following versions of this skeleton are available, the number
 the same as \haddockid{gather1} but with flipped arguments\par
 The following versions of this skeleton are available, the number
  suggesting how many nested vectors it is operating upon.\par
-\begin{interactive}
-(<@>), (<<@>>), (<<<@>>>), (<<<<@>>>>), (<<<<<@>>>>>),\end{interactive}
+\begin{code}
+(<@>), (<<@>>), (<<<@>>>), (<<<<@>>>>), (<<<<<@>>>>>),\end{code}
 
 
 \item[\begin{tabular}{@{}l}

@@ -256,15 +256,11 @@ Reads a signal from a string and checks if it is well-formed.
 \begin{interactive}
 λ> readSignal "{ 1@0, 2@2, 3@5, 4@7, 5@10 }" :: Signal Int
 { 1 @0s, 2 @2s, 3 @5s, 4 @7s, 5 @10s}
-
-\end{interactive}Incorrect usage (not covered by \haddocktt{doctest}):\par
-           \begin{quote}
-           {\haddockverb\begin{verbatim}
-           λ> readSignal "{ 1@0, 2@2, 3@5, 4@10, 5@7 }" :: Signal Int
+λ> readSignal "{ 1@0, 2@2, 3@5, 4@10, 5@7 }" :: Signal Int
 { 1 @0s, 2 @2s, 3 @5s*** Exception: [MoC.DE] malformed signal
 λ> readSignal "{ 1@1, 2@2, 3@5, 4@7, 5@10 }" :: Signal Int
-*** Exception: [MoC.DE] signal does not start from global 0\end{verbatim}}
-           \end{quote}
+*** Exception: [MoC.DE] signal does not start from global 0
+\end{interactive}
            
 \end{haddockdesc}
 \subsection{\haddocktt{DE} process constuctors}
@@ -553,9 +549,7 @@ Synchronizes a (set of) \haddockid{DE} signal(s) an
  strips off their explicit tags, outputting the equivalent
  \haddockid{SY} signal(s), tupled with an SY signal
  carrying the timestamps for the synchronization points.\par
-The following constructors are provided:\par
-\begin{interactive}
-toSY, toSY2, toSY3, toSY4\end{interactive}
+Constructors : \haddocktt{toSY{\char 91}1-4{\char 93}}. \par
 \begin{interactive}
 λ> let s1 = DE.infinite 1
 λ> let s2 = DE.readSignal "{1@0, 2@2, 3@6, 4@8, 5@9}" :: DE.Signal Int
