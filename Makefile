@@ -59,7 +59,6 @@ make-pdf-targets=$(patsubst %,$(call target-format,$(1),%),$(call get-fig-names,
 
 ## TEMPLATES ##
 
-
 define compile-latex
 
 	@echo $(2)
@@ -80,7 +79,7 @@ endef
 manual:
 	@test -f manual/input/ForSyDe-Atom.tex || echo \
 		"Manual not set up yet. Run 'make prep-manual'"
-	make -C manual
+	make -C manual REPODIR=$(EXAMP_PATH)
 
 
 latex-pretty:
