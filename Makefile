@@ -1,18 +1,11 @@
-MKDIR = mkdir -p
-ATOM_REPO = https://github.com/ugeorge/forsyde-atom.git
-HADOCK_REPO = https://github.com/ugeorge/haddock.git
+MKDIR       := mkdir -p
+ATOM_REPO   := git@github.com:ugeorge/forsyde-atom.git
+HADOCK_REPO := https://github.com/ugeorge/haddock.git
+EXAMP_REPO  := git@github.com:ugeorge/forsyde-atom-examples.git
 
-API_PATH:=api
-HTML_PATH:=$(API_PATH)/html
-LATEX_PATH:=$(API_PATH)/latex
-PRETTY_PATH:=$(LATEX_PATH)/pretty
-
-# TODO! LATEX_REPO
-
-# FILES = eqs-exb misc\
-# 	eqs-moc moc moc-sy moc-de moc-ct moc-sdf \
-# 	eqs-skel skel eqs-skel-vector skel-vector-func \
-# 	skel-vector-comm
+HTML_PATH:=api/html
+LATEX_PATH:=api/latex
+PRETTY_PATH:=api/latex-pretty
 
 FILES = eqs-exb misc \
 	eqs-moc moc moc-sy moc-de moc-ct moc-sdf \
@@ -23,20 +16,24 @@ target-format=pdf/$(1)-$(2).pdf
 
 ##################### DO NOT CHANGE FROM HERE #####################
 
-include .env
-# export $(shell sed 's/=.*//' envfile)
+WORKSPACE = forsyde-atom forsyde-atom-examples api png pdf
 
 STYLE = $(wildcard tex/*.sty)
 PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
 PDF_FIGS  = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
 PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
+ATOM_SRCS = $(shell find forsyde-atom/src -type f -name '*.hs') forsyde-atom/forsyde-atom.cabal
 
+ATOM_LIB = forsyde-atom/dist
 DUMP_SRC = atom-docplots/Main.hs
 DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
+PLOT_DAT = $(wildcard tex/data/*.flx)
 
-ATOM_VER    = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
+WWW_PATH = forsyde-atom/api
 
-## FUNCTIONS ##
+ATOM_VER = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
+
+#### FUNCTIONS ####
 
 # Check that given variables are set and all have non-empty values,
 # die with an error otherwise.
@@ -57,7 +54,7 @@ get-fig-names=$(shell grep -oP "(?<=begin{docimage}{).*(?=})" $(1))
 # 1. path to TeX file
 make-pdf-targets=$(patsubst %,$(call target-format,$(1),%),$(call get-fig-names, tex/$(1).tex))
 
-## TEMPLATES ##
+#### TEMPLATES ####
 
 define compile-latex
 
@@ -72,120 +69,61 @@ define pdf-template
 	$(foreach image,$(2),$(call compile-latex,$(1),$(image)))
 endef
 
-## TARGETS ##
 
-.PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex prep-atom
-
-manual:
-	@test -f manual/input/ForSyDe-Atom.tex || echo \
-		"Manual not set up yet. Run 'make prep-manual'"
-	make -C manual REPODIR=$(EXAMP_PATH)
+#### TARGETS ####
 
 
-latex-pretty:
-	@test -d $(HTML_PATH) || echo "Run 'make html' first"
-	@test -d $(LATEX_PATH) || echo "Run 'make latex-raw' first"
-	@$(MKDIR) $(PRETTY_PATH)
-	@bash resource/prettify.sh $(HTML_PATH) $(LATEX_PATH) $(PRETTY_PATH)
-	@echo "Pretty version is in: $(PRETTY_PATH)"
+.PHONY: workspace html pdf png clean remove check
 
-latex-raw: prep-html prep-latex Makefile $(STYLE)
-	@cd forsyde-atom \
-	&& cabal sandbox init \
-	&& cabal install --dependencies-only \
-	&& cabal configure --with-haddock=../haddock/dist/build/haddock/haddock \
-	&& (cabal haddock --haddock-options=--latex | awk 'END {print $$NF}' | xargs dirname | xargs -I {} mv {} ../$(LATEX_PATH))
-	@find $(LATEX_PATH) -type f ! \( -iname \*.tex -o -iname \*.sty \) -delete
-	@echo "Generated LaTeX API doc in $(LATEX_PATH)"
-
-
-html: png prep-html Makefile $(STYLE)
-	@cp -f png/* forsyde-atom/fig/
-	@cd forsyde-atom \
-	&& cabal sandbox init \
-	&& cabal install --dependencies-only \
-	&& cabal configure \
-	&& (cabal haddock --hyperlink-source | awk 'END {print $$NF}' | xargs dirname | xargs -I {} mv {} ../$(HTML_PATH))
-	@echo "Generated HTML API doc in $(HTML_PATH)"
-
-
-
-pdf: prep-pdf $(STYLE) $(PDF_FIGS)
-png: pdf prep-png $(PNG_FIGS)
-
-prep-pdf: dump-plots
-	@$(MKDIR) pdf
-# TODO	LATEX_REPO
-
-dump-plots: $(DUMP_BIN)
-	@cd atom-docplots && cabal build -j4
-	./$(DUMP_BIN)
-	@rm -rf tex/data
-	@mv data tex
-
-$(DUMP_BIN): prep-atom
-	@cd atom-docplots \
-	  && cabal sandbox init \
-	  && cabal sandbox add-source ../forsyde-atom \
-	  && cabal install \
-	  && cabal build -j4
-
-prep-png:
-	@$(MKDIR) png
-
-prep-html: prep-atom
-	@$(MKDIR) $(API_PATH)
-	@rm -rf $(HTML_PATH)
+workspace:
+#	checking dependencies
+	@echo "* checking dependencies..."
 	@if ! haddock --version; then cabal install haddock; fi
 	@if ! hscolour --version; then cabal install hscolour; fi
+	@test -f $(shell kpsewhich --all forsyde.sty) \
+	    || (echo "Could not find ForSyDe-LaTex. Please install it from https://forsyde.github.io/forsyde-latex/"; exit 1)
+#       creating folders
+	@echo "* creating folders..."
+	@if [ ! -d forsyde-atom ]; then git clone $(ATOM_REPO) -b gh-pages; fi
+	@if [ ! -d forsyde-atom-examples ]; then git clone $(EXAMP_REPO); fi
+	@$(MKDIR) api
+	@$(MKDIR) png
+	@$(MKDIR) pdf
+#       preparing forsyde-atom for generating documentation
+	@echo "* preparing ForSyDe-Atom for generating docs..."
+	sed -i 's/-- extra-doc-files/extra-doc-files/g' forsyde-atom/forsyde-atom.cabal;
+	mkdir -p forsyde-atom/fig;
+	touch forsyde-atom/fig/phony.png;
 
-prep-atom:
-	@if [ ! -d forsyde-atom ]; then \
-		git clone $(ATOM_REPO); \
-		sed -i 's/-- extra-doc-files/extra-doc-files/g' forsyde-atom/forsyde-atom.cabal; \
-		mkdir -p forsyde-atom/fig; \
-		touch forsyde-atom/fig/phony.png; \
-	fi
+pdf: check $(PLOT_DAT) $(STYLE) $(PDF_FIGS)
 
+png: pdf $(PNG_FIGS)
 
-prep-latex:
-	@$(MKDIR) $(API_PATH)
-	@rm -rf $(LATEX_PATH)
-	@if [ ! -d haddock ]; then \
-		git clone $(HADOCK_REPO); \
-		cd haddock \
-		&& cabal sandbox init \
-		&& cabal sandbox add-source haddock-library \
-		&& cabal sandbox add-source haddock-api \
-		&& cabal sandbox add-source haddock-test \
-		&& cabal install -j4 --dependencies-only \
-		&& cabal configure \
-		&& cabal build -j4; \
-	fi
+html: png Makefile $(STYLE)
+	rm -rf $(HTML_PATH)
+	@cp -f png/* forsyde-atom/fig/
+	@cd forsyde-atom \
+	&& (cabal haddock --hyperlink-source | awk 'END {print $$NF}' | xargs dirname | xargs -I {} mv {} ../$(HTML_PATH)) \
+	&& echo "Generated HTML API doc in $(HTML_PATH)"
 
-prep-manual: html latex-raw latex-pretty 
-	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
-	@test -d $(EXAMP_PATH) || echo \
-		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
-#	@cp -rf resource/manual .
-	@cp -f $(PRETTY_PATH)/*.tex manual/input/
-	@mkdir -p manual/fig
-	@cp -f pdf/*.pdf manual/fig/
-	@echo "\\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
-	@echo "\\\newcommand*{\\AtomVersion}{kkkkkk}" | sed 's/kkkkkk/'"$(ATOM_VER)"'/g' >> manual/sty/atom-vars.sty
-
-prep-manual-quick: pdf 
-	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
-	@test -d $(EXAMP_PATH) || echo \
-		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
-	@cp -rf resource/manual .
-	@mkdir -p manual/fig
-	@cp -f pdf/*.pdf manual/fig/
-	@echo "\\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
-	@echo "\\\newcommand*{\\AtomVersion}{kkkkkk}" | sed 's/kkkkkk/'"$(ATOM_VER)"'/g' >> manual/sty/atom-vars.sty
+www: html
+	@rm -rf $(WWW_PATH)/*
+	@cp -r $(HTML_PATH)/* $(WWW_PATH)/
+	@for f in $(WWW_PATH)/*.html; do\
+	    grep -Pzo "(?s)(?<=\<body\>).*?(?=\</body\>)" $$f > tmp; \
+	    mv tmp $$f; \
+	    echo "---" > tmp; \
+	    echo "layout: haddock" >> tmp; \
+	    echo "---" >> tmp; \
+	    echo "" >> tmp; \
+	    echo "$$(cat tmp) \n $$(cat $$f)" > $$f; \
+	done
+# 	perl -pi -e '$a++if s/.*body.*//si;$a||s/.*//s' $(WWW_PATH)/*.html
+# #	sed -i 's|<body>||g' $(WWW_PATH)/*.html
+# 	sed -i 's|</body>||g' $(WWW_PATH)/*.html
 
 
-## RULES ##
+#### RULES ####
 
 # generate rules for PDF figures
 $(foreach file,$(FILES),\
@@ -196,6 +134,127 @@ png/%.png: pdf/%.pdf
 	@echo $@
 	@convert -density 150 $< -quality 90 $@
 
+$(ATOM_LIB): $(HASKELL_SRCS)
+	@cd forsyde-atom \
+	&& cabal sandbox init \
+	&& cabal install --dependencies-only \
+	&& cabal configure
+
+$(DUMP_BIN): $(DUMP_SRC)
+	@cd atom-docplots \
+	  && cabal sandbox init \
+	  && cabal sandbox add-source ../forsyde-atom \
+	  && cabal install \
+	  && cabal build -j4
+
+$(PLOT_DAT): $(ATOM_LIB) $(DUMP_BIN)
+	@cd atom-docplots && cabal build -j4
+	./$(DUMP_BIN)
+	@rm -rf tex/data
+	@mv data tex
+
+# .PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex prep-atom
+
+# manual:
+# 	@test -f manual/input/ForSyDe-Atom.tex || echo \
+# 		"Manual not set up yet. Run 'make prep-manual'"
+# 	make -C manual REPODIR=$(EXAMP_PATH)
+
+
+# latex-pretty:
+# 	@test -d $(HTML_PATH) || echo "Run 'make html' first"
+# 	@test -d $(LATEX_PATH) || echo "Run 'make latex-raw' first"
+# 	@$(MKDIR) $(PRETTY_PATH)
+# 	@bash resource/prettify.sh $(HTML_PATH) $(LATEX_PATH) $(PRETTY_PATH)
+# 	@echo "Pretty version is in: $(PRETTY_PATH)"
+
+# latex-raw: prep-html prep-latex Makefile $(STYLE)
+# 	@cd forsyde-atom \
+# 	&& cabal sandbox init \
+# 	&& cabal install --dependencies-only \
+# 	&& cabal configure --with-haddock=../haddock/dist/build/haddock/haddock \
+# 	&& (cabal haddock --haddock-options=--latex | awk 'END {print $$NF}' | xargs dirname | xargs -I {} mv {} ../$(LATEX_PATH))
+# 	@find $(LATEX_PATH) -type f ! \( -iname \*.tex -o -iname \*.sty \) -delete
+# 	@echo "Generated LaTeX API doc in $(LATEX_PATH)"
+
+
+
+# ###### PREPS
+
+# prep-pdf: dump-plots
+# 	@$(MKDIR) pdf
+# 	@test -f $(shell kpsewhich --all forsyde.sty) || echo \
+# "Installation did not succeed! Refer to the user manual for installing the package manually."
+
+# dump-plots: $(DUMP_BIN)
+# 	@cd atom-docplots && cabal build -j4
+# 	./$(DUMP_BIN)
+# 	@rm -rf tex/data
+# 	@mv data tex
+
+# $(DUMP_BIN): prep-atom
+# 	@cd atom-docplots \
+# 	  && cabal sandbox init \
+# 	  && cabal sandbox add-source ../forsyde-atom \
+# 	  && cabal install \
+# 	  && cabal build -j4
+
+# prep-png:
+# 	@$(MKDIR) png
+
+# prep-html: prep-atom
+# 	@$(MKDIR) $(API_PATH)
+# 	@rm -rf $(HTML_PATH)
+# 	@if ! haddock --version; then cabal install haddock; fi
+# 	@if ! hscolour --version; then cabal install hscolour; fi
+
+# prep-atom:
+# 	@if [ ! -d forsyde-atom ]; then \
+# 		git clone $(ATOM_REPO); \
+# 		sed -i 's/-- extra-doc-files/extra-doc-files/g' forsyde-atom/forsyde-atom.cabal; \
+# 		mkdir -p forsyde-atom/fig; \
+# 		touch forsyde-atom/fig/phony.png; \
+# 	fi
+
+
+# prep-latex:
+# 	@$(MKDIR) $(API_PATH)
+# 	@rm -rf $(LATEX_PATH)
+# 	@if [ ! -d haddock ]; then \
+# 		git clone $(HADOCK_REPO); \
+# 		cd haddock \
+# 		&& cabal sandbox init \
+# 		&& cabal sandbox add-source haddock-library \
+# 		&& cabal sandbox add-source haddock-api \
+# 		&& cabal sandbox add-source haddock-test \
+# 		&& cabal install -j4 --dependencies-only \
+# 		&& cabal configure \
+# 		&& cabal build -j4; \
+# 	fi
+
+# prep-manual: html latex-raw latex-pretty 
+# 	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
+# 	@test -d $(EXAMP_PATH) || echo \
+# 		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
+# #	@cp -rf resource/manual .
+# 	@cp -f $(PRETTY_PATH)/*.tex manual/input/
+# 	@mkdir -p manual/fig
+# 	@cp -f pdf/*.pdf manual/fig/
+# 	@echo "\\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
+# 	@echo "\\\newcommand*{\\AtomVersion}{kkkkkk}" | sed 's/kkkkkk/'"$(ATOM_VER)"'/g' >> manual/sty/atom-vars.sty
+
+# prep-manual-quick: pdf 
+# 	@:$(call check_defined, EXAMP_PATH, full path to forsyde-atom-examples)
+# 	@test -d $(EXAMP_PATH) || echo \
+# 		"Please define EXAMP_PATH. The current one is not a valid path : $(EXAMP_PATH)"
+# 	@cp -rf resource/manual .
+# 	@mkdir -p manual/fig
+# 	@cp -f pdf/*.pdf manual/fig/
+# 	@echo "\\\newcommand*{\\AtomExamplesRoot}{$(EXAMP_PATH)}" > manual/sty/atom-vars.sty
+# 	@echo "\\\newcommand*{\\AtomVersion}{kkkkkk}" | sed 's/kkkkkk/'"$(ATOM_VER)"'/g' >> manual/sty/atom-vars.sty
+
+
+
 ## EXTRA TARGETS ##
 
 clean:
@@ -205,12 +264,11 @@ clean:
 remove: clean
 	rm -rf pdf png forsyde-atom forsyde-latex haddock
 
-.env:
-	@if [ ! -f .env ]; then \
-		read -p "Where is the forsyde-atom-examples dir? " examp; \
-		examp_dir=`readlink -f $$examp`; \
-		echo "EXAMP_PATH := $$examp_dir" > .env; \
-	fi
+check:
+	@for dir in $(WORKSPACE); do test -d ${dir} \
+	    || (echo "Could not find $dir. Please run 'make workspace'"; exit 1); \
+	done
 
-test:
-	echo $(EXAMP_PATH)
+
+# test:
+# 	echo $(EXAMP_PATH)

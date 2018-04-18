@@ -6,10 +6,8 @@ Project for generating API documentation for [ForSyDe-Atom](https://github.com/f
 
 The Makefile provided does pretty much everything needed. The most important targets are:
 
-    make         # same as 'make all'
-	make latex
-	make html
-	make clean
-	make uninstall
-	
-The names are self-explamatory
+    make workspace     # needed at the beginning
+    make clean         # cleans the generated files
+    make remove        # removes the workspace
+    make html          # creates HTML API
+    make www           # API ready for WWW publishing
