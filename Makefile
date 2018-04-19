@@ -17,19 +17,17 @@ target-format=pdf/$(1)-$(2).pdf
 ##################### DO NOT CHANGE FROM HERE #####################
 
 WORKSPACE = forsyde-atom forsyde-atom-examples api png pdf
+ATOM_LIB = forsyde-atom/dist
+WWW_PATH = forsyde-atom/api
+DUMP_SRC = atom-docplots/Main.hs
+DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
 
 STYLE = $(wildcard tex/*.sty)
 PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
-PDF_FIGS  = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
+PDF_FIGS = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
+PDF_FIGS = $(sort $(foreach file,$(DUMP_SRC),$(call make-flx-targets,$(file))))
 PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
 ATOM_SRCS = $(shell find forsyde-atom/src -type f -name '*.hs') forsyde-atom/forsyde-atom.cabal
-
-ATOM_LIB = forsyde-atom/dist
-DUMP_SRC = atom-docplots/Main.hs
-DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
-PLOT_DAT = $(wildcard tex/data/*.flx)
-
-WWW_PATH = forsyde-atom/api
 
 ATOM_VER = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
 
@@ -54,6 +52,14 @@ get-fig-names=$(shell grep -oP "(?<=begin{docimage}{).*(?=})" $(1))
 # 1. path to TeX file
 make-pdf-targets=$(patsubst %,$(call target-format,$(1),%),$(call get-fig-names, tex/$(1).tex))
 
+# Extracts plot file names from TeX files
+# 1. path to TeX file
+get-plot-names=$(shell grep -oP "(?<=labels = \[).*(?=\])" $(1) | sed 's/"//g' | sed 's/,//g')
+
+# Makes target PDF names with figure names extracted.
+# 1. path to Haskell file
+make-flx-targets=$(patsubst %, tex/data/%.flx, $(call get-plot-names, $(1)))
+
 #### TEMPLATES ####
 
 define compile-latex
@@ -69,6 +75,13 @@ define pdf-template
 	$(foreach image,$(2),$(call compile-latex,$(1),$(image)))
 endef
 
+define flx-template
+  $(2) : $(1) $(ATOM_LIB)
+	@cd atom-docplots && cabal build -j4
+	./$(DUMP_BIN)
+	@rm -rf tex/data
+	@mv data tex
+endef
 
 #### TARGETS ####
 
@@ -91,9 +104,8 @@ workspace:
 	@$(MKDIR) pdf
 #       preparing forsyde-atom for generating documentation
 	@echo "* preparing ForSyDe-Atom for generating docs..."
-	sed -i 's/-- extra-doc-files/extra-doc-files/g' forsyde-atom/forsyde-atom.cabal;
-	mkdir -p forsyde-atom/fig;
-	touch forsyde-atom/fig/phony.png;
+	@mkdir -p forsyde-atom/fig;
+	@touch forsyde-atom/fig/phony.png;
 
 pdf: check $(PLOT_DAT) $(STYLE) $(PDF_FIGS)
 
@@ -110,8 +122,8 @@ www: html
 	@rm -rf $(WWW_PATH)/*
 	@cp -r $(HTML_PATH)/* $(WWW_PATH)/
 	@for f in $(WWW_PATH)/*.html; do\
-	    grep -Pzo "(?s)(?<=\<body\>).*?(?=\</body\>)" $$f > tmp; \
-	    mv tmp $$f; \
+	    grep -Pzo "(?s)(?<=\<body\>).*?(?=\</body\>)" $$f > tmp && mv tmp $$f; \
+	    perl -0777 -i -pe 's/<div id="synopsis.*?<\/div>//g' $$f ; \
 	    echo "---" > tmp; \
 	    echo "layout: haddock" >> tmp; \
 	    echo "---" >> tmp; \
@@ -124,6 +136,9 @@ www: html
 
 
 #### RULES ####
+
+# generate rules for ForSyDe-Latex plot data
+$(eval $(call flx-template,$(DUMP_SRC),$(call make-flx-targets,$(DUMP_SRC))))
 
 # generate rules for PDF figures
 $(foreach file,$(FILES),\
@@ -146,12 +161,6 @@ $(DUMP_BIN): $(DUMP_SRC)
 	  && cabal sandbox add-source ../forsyde-atom \
 	  && cabal install \
 	  && cabal build -j4
-
-$(PLOT_DAT): $(ATOM_LIB) $(DUMP_BIN)
-	@cd atom-docplots && cabal build -j4
-	./$(DUMP_BIN)
-	@rm -rf tex/data
-	@mv data tex
 
 # .PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex prep-atom
 
@@ -269,6 +278,5 @@ check:
 	    || (echo "Could not find $dir. Please run 'make workspace'"; exit 1); \
 	done
 
-
-# test:
-# 	echo $(EXAMP_PATH)
+test:
+	echo $(EXAMP_PATH)
