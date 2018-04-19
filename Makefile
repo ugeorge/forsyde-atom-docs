@@ -16,9 +16,9 @@ target-format=pdf/$(1)-$(2).pdf
 
 ##################### DO NOT CHANGE FROM HERE #####################
 
-WORKSPACE = forsyde-atom forsyde-atom-examples api png pdf
-ATOM_LIB = forsyde-atom/dist
-WWW_PATH = forsyde-atom/api
+WORKSPACE = clean work examples api
+WWW_PATH = work/api
+ATOM_LIB = work/dist
 DUMP_SRC = atom-docplots/Main.hs
 DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
 
@@ -27,9 +27,9 @@ PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
 PDF_FIGS = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
 PDF_FIGS = $(sort $(foreach file,$(DUMP_SRC),$(call make-flx-targets,$(file))))
 PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
-ATOM_SRCS = $(shell find forsyde-atom/src -type f -name '*.hs') forsyde-atom/forsyde-atom.cabal
+ATOM_SRCS = $(shell find work/src -type f -name '*.hs') work/forsyde-atom.cabal
 
-ATOM_VER = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
+ATOM_VER = $(shell cd clean && git describe --tags | sed 's|-.*$$||g')
 
 #### FUNCTIONS ####
 
@@ -97,15 +97,16 @@ workspace:
 	    || (echo "Could not find ForSyDe-LaTex. Please install it from https://forsyde.github.io/forsyde-latex/"; exit 1)
 #       creating folders
 	@echo "* creating folders..."
-	@if [ ! -d forsyde-atom ]; then git clone $(ATOM_REPO) -b gh-pages; fi
-	@if [ ! -d forsyde-atom-examples ]; then git clone $(EXAMP_REPO); fi
+	@if [ ! -d clean ]; then git clone $(ATOM_REPO) clean; fi
+	@if [ ! -d work ]; then git clone $(ATOM_REPO) -b gh-pages work; fi
+	@if [ ! -d examples ]; then git clone $(EXAMP_REPO) examples; fi
 	@$(MKDIR) api
 	@$(MKDIR) png
 	@$(MKDIR) pdf
 #       preparing forsyde-atom for generating documentation
 	@echo "* preparing ForSyDe-Atom for generating docs..."
-	@mkdir -p forsyde-atom/fig;
-	@touch forsyde-atom/fig/phony.png;
+	@mkdir -p work/fig;
+	@touch work/fig/phony.png;
 
 pdf: check $(PLOT_DAT) $(STYLE) $(PDF_FIGS)
 
@@ -113,8 +114,8 @@ png: pdf $(PNG_FIGS)
 
 html: png Makefile $(STYLE)
 	rm -rf $(HTML_PATH)
-	@cp -f png/* forsyde-atom/fig/
-	@cd forsyde-atom \
+	@cp -f png/* work/fig/
+	@cd work \
 	&& (cabal haddock --hyperlink-source | awk 'END {print $$NF}' | xargs dirname | xargs -I {} mv {} ../$(HTML_PATH)) \
 	&& echo "Generated HTML API doc in $(HTML_PATH)"
 
@@ -130,10 +131,12 @@ www: html
 	    echo "" >> tmp; \
 	    echo "$$(cat tmp) \n $$(cat $$f)" > $$f; \
 	done
-# 	perl -pi -e '$a++if s/.*body.*//si;$a||s/.*//s' $(WWW_PATH)/*.html
-# #	sed -i 's|<body>||g' $(WWW_PATH)/*.html
-# 	sed -i 's|</body>||g' $(WWW_PATH)/*.html
+	@ rm tmp
 
+www-distro: www
+	@rsync --include "*/" --exclude="*" --include="*.hs" work/src/ clean/src/
+	@cd clean && git add src && git commit -m "updated documentation (*auto)" && git push origin master
+	@cd work && git stash && git pull origin master
 
 #### RULES ####
 
@@ -149,8 +152,8 @@ png/%.png: pdf/%.pdf
 	@echo $@
 	@convert -density 150 $< -quality 90 $@
 
-$(ATOM_LIB): $(HASKELL_SRCS)
-	@cd forsyde-atom \
+$(ATOM_LIB): $(ATOM_SRCS)
+	@cd work \
 	&& cabal sandbox init \
 	&& cabal install --dependencies-only \
 	&& cabal configure
@@ -158,7 +161,7 @@ $(ATOM_LIB): $(HASKELL_SRCS)
 $(DUMP_BIN): $(DUMP_SRC)
 	@cd atom-docplots \
 	  && cabal sandbox init \
-	  && cabal sandbox add-source ../forsyde-atom \
+	  && cabal sandbox add-source ../work \
 	  && cabal install \
 	  && cabal build -j4
 
@@ -267,11 +270,11 @@ $(DUMP_BIN): $(DUMP_SRC)
 ## EXTRA TARGETS ##
 
 clean:
-	rm log
+	rm -f log tmp
 	rm -rf api
 
 remove: clean
-	rm -rf pdf png forsyde-atom forsyde-latex haddock
+	rm -rf $(WORKSPACE)
 
 check:
 	@for dir in $(WORKSPACE); do test -d ${dir} \
