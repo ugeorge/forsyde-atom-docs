@@ -16,20 +16,20 @@ target-format=pdf/$(1)-$(2).pdf
 
 ##################### DO NOT CHANGE FROM HERE #####################
 
-WORKSPACE = clean work examples api
-WWW_PATH = work/api
-ATOM_LIB = work/dist
+WORKSPACE = gh-pages forsyde-atom examples api
+WWW_PATH = gh-pages/api
+ATOM_LIB = forsyde-atom/dist
 DUMP_SRC = atom-docplots/Main.hs
 DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
 
 STYLE = $(wildcard tex/*.sty)
+FLX_DUMP = $(sort $(foreach file,$(DUMP_SRC),$(call make-flx-targets,$(file))))
 PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
 PDF_FIGS = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
-PDF_FIGS = $(sort $(foreach file,$(DUMP_SRC),$(call make-flx-targets,$(file))))
 PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
-ATOM_SRCS = $(shell find work/src -type f -name '*.hs') work/forsyde-atom.cabal
+ATOM_SRCS = $(shell find forsyde-atom/src -type f -name '*.hs') forsyde-atom/forsyde-atom.cabal
 
-ATOM_VER = $(shell cd clean && git describe --tags | sed 's|-.*$$||g')
+ATOM_VER = $(shell cd gh-pages && git describe --tags | sed 's|-.*$$||g')
 
 #### FUNCTIONS ####
 
@@ -76,7 +76,7 @@ define pdf-template
 endef
 
 define flx-template
-  $(2) : $(1) $(ATOM_LIB)
+  $(2) : $(1) $(DUMP_BIN) $(ATOM_LIB)
 	@cd atom-docplots && cabal build -j4
 	./$(DUMP_BIN)
 	@rm -rf tex/data
@@ -86,7 +86,7 @@ endef
 #### TARGETS ####
 
 
-.PHONY: workspace html pdf png clean remove check
+.PHONY: workspace html pdf png gh-pages remove check
 
 workspace:
 #	checking dependencies
@@ -97,25 +97,26 @@ workspace:
 	    || (echo "Could not find ForSyDe-LaTex. Please install it from https://forsyde.github.io/forsyde-latex/"; exit 1)
 #       creating folders
 	@echo "* creating folders..."
-	@if [ ! -d clean ]; then git clone $(ATOM_REPO) clean; fi
-	@if [ ! -d work ]; then git clone $(ATOM_REPO) -b gh-pages work; fi
+	@if [ ! -d forsyde-atom ]; then git clone $(ATOM_REPO); fi
+	@if [ ! -d gh-pages ]; then git clone $(ATOM_REPO) -b gh-pages gh-pages; fi
 	@if [ ! -d examples ]; then git clone $(EXAMP_REPO) examples; fi
 	@$(MKDIR) api
 	@$(MKDIR) png
 	@$(MKDIR) pdf
 #       preparing forsyde-atom for generating documentation
 	@echo "* preparing ForSyDe-Atom for generating docs..."
-	@mkdir -p work/fig;
-	@touch work/fig/phony.png;
+	@sed -i 's/-- extra-doc-files/extra-doc-files/g' forsyde-atom/forsyde-atom.cabal;
+	@mkdir -p forsyde-atom/fig;
+	@touch forsyde-atom/fig/phony.png;
 
-pdf: check $(PLOT_DAT) $(STYLE) $(PDF_FIGS)
+pdf: check $(FLX_DUMP) $(STYLE) $(PDF_FIGS)
 
 png: pdf $(PNG_FIGS)
 
 html: png Makefile $(STYLE)
-	rm -rf $(HTML_PATH)
-	@cp -f png/* work/fig/
-	@cd work \
+	@rm -rf $(HTML_PATH)
+	@cp -f png/* forsyde-atom/fig/
+	@cd forsyde-atom \
 	&& (cabal haddock --hyperlink-source | awk 'END {print $$NF}' | xargs dirname | xargs -I {} mv {} ../$(HTML_PATH)) \
 	&& echo "Generated HTML API doc in $(HTML_PATH)"
 
@@ -131,12 +132,12 @@ www: html
 	    echo "" >> tmp; \
 	    echo "$$(cat tmp) \n $$(cat $$f)" > $$f; \
 	done
-	@ rm tmp
+	@rm tmp
 
-www-distro: www
-	@rsync --include "*/" --exclude="*" --include="*.hs" work/src/ clean/src/
-	@cd clean && git add src && git commit -m "updated documentation (*auto)" && git push origin master
-	@cd work && git stash && git pull origin master
+# www-distro: www
+# 	@rsync --include "*/" --exclude="*" --include="*.hs" forsyde-atom/src/ gh-pages/src/
+# 	@cd gh-pages && git add src && git commit -m "updated documentation (*auto)" && git push origin master
+# 	@cd work && git stash && git pull origin master
 
 #### RULES ####
 
@@ -153,7 +154,7 @@ png/%.png: pdf/%.pdf
 	@convert -density 150 $< -quality 90 $@
 
 $(ATOM_LIB): $(ATOM_SRCS)
-	@cd work \
+	@cd forsyde-atom \
 	&& cabal sandbox init \
 	&& cabal install --dependencies-only \
 	&& cabal configure
@@ -161,7 +162,7 @@ $(ATOM_LIB): $(ATOM_SRCS)
 $(DUMP_BIN): $(DUMP_SRC)
 	@cd atom-docplots \
 	  && cabal sandbox init \
-	  && cabal sandbox add-source ../work \
+	  && cabal sandbox add-source ../forsyde-atom \
 	  && cabal install \
 	  && cabal build -j4
 
@@ -275,6 +276,7 @@ clean:
 
 remove: clean
 	rm -rf $(WORKSPACE)
+	cd atom-docplots && cabal sandbox delete && rm -rf dist
 
 check:
 	@for dir in $(WORKSPACE); do test -d ${dir} \
