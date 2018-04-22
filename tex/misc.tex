@@ -2,6 +2,7 @@
 \usepackage[tikz,plot,math]{forsyde}
 \usepackage{amsmath}
 \usepackage{array}
+\usepackage{booktabs}
 \usepackage{forsyde-atom-docs}
 \usetikzlibrary{forsyde.pictures.layered}
 \begin{document}
@@ -16,7 +17,7 @@
     \interface[] (i) <5.5,2> {sy}{ct};
     \interface[] (j) <5.5,-2> {sy}{ct};
     \standard[process,moc=ct,type=constructor$_1$] (p4) <8,2> {Process$_4$};
-    \standard[process,moc=ct,type=constructor$_1$] (p5) <8,-2> {Process$_5$};
+    \standard[process,moc=ct,type=constructor$_2$] (p5) <8,-2> {Process$_5$};
     \draw[s] (p1) edge[<-] ++(-2,0) edge[->] (p2) edge[<-] (p3);
     \draw[s] (p2) edge[->] (p3) edge[->] (i);
     \draw[s] (j)  edge[<-] (p3) edge[->] (p5); 
@@ -25,6 +26,19 @@
     \node[anchor=east] at (5.5,0) {\it MoC$_1$(SY)}; \node[anchor=west] at (5.5,0) {\it MoC$_2$(CT)};
     \node[anchor=south east] at ($(p1)!.5!(p2)$) {\scriptsize signal};
   \end{tikzpicture}
+\end{docimage}
+
+
+\begin{docimage}{process-template}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[constructors=shallow]
+    \standard[process,type=constructor,f={$v_1$;$v_2$;$...$}] (p1) {process};
+    \draw[s] (p1) edge[<-] ++(-3.5,0) edge[->] ++(3.5,0);
+    \node[anchor=south west] at (-3.5,0) {\scriptsize input signal(s)};
+    \node[anchor=south east] at  (3.5,0) {\scriptsize output signal(s)};
+  \end{tikzpicture}
+\end{figure}
 \end{docimage}
 
 
@@ -192,6 +206,20 @@
   \end{tikzpicture}
 \end{tabular}
 \end{docimage}
+
+\begin{docimage}{atom-forsyde-equiv}
+  \begin{table}[h]
+    \centering\small
+    \begin{tabular}{r|l}\toprule
+      \bf ForSyDe-Atom & \bf Classical ForSyDe \\ \midrule
+      MoC atom                & (primitive) process constructor $\in PC$ \\
+      MoC pattern             & network of process constructors $\in PC$ \\
+      instance of MoC atom    & process $\in P$ \\
+      instance of MoC pattern & process network $\in P$ \\\bottomrule
+    \end{tabular}
+  \end{table}
+\end{docimage}
+
 
 \end{document}
 
