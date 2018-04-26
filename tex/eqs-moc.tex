@@ -8,49 +8,57 @@
 
 \begin{docimage}{atom-formatted-func}
   \begin{equation*}%
-    \dot{a} \rightarrow \dot{b}
-    \equiv \dot{\alpha}_1 \times \dot{\alpha}_2 \times ...
-    \rightarrow \dot{\beta}_1 \times \dot{\beta}_2 \times ...  
+    \context{\Gamma}
+    (\alpha^n \rightarrow \beta^m)
+    \equiv \breve{\alpha}_1 \times \breve{\alpha}_2 \times ... \times \breve{\alpha}_n
+    \rightarrow \breve{\beta}_1 \times \breve{\beta}_2 \times ... \times \breve{\beta}_m
   \end{equation*}
 \end{docimage} 
 
 \begin{docimage}{atom-formatted-arg}
-  \begin{align*}%
-    \dot{\alpha}&\ = \alpha^r\\
-    r&\ \in
+  % \begin{align*}%
+  %   \dot{\alpha}&\ = \alpha^r\\
+  %   r&\ \in
+  %   \begin{cases}
+  %     \{1\}, & \text{for all timed MoCs (e.g. SY, DE, CT)} \\
+  %     \mathbb{N}, & \text{for static variants of SDF}\\
+  %     \mathbb{N}^n, & \text{for CSDF}\\
+  %     S \times \mathbb{N} \rightarrow \mathbb{N}, & \text{where } S \text{ is a state space,} \\
+  %       & \text{in the most general case of untimed data flow}
+  %   \end{cases}
+  % \end{align*}
+  \begin{equation*}
+    \breve{\alpha} =
     \begin{cases}
-      \{1\}, & \text{for all timed MoCs (e.g. SY, DE, CT)} \\
-      \mathbb{N}, & \text{for static variants of SDF}\\
-      \mathbb{N}^n, & \text{for CSDF}\\
-      S \times \mathbb{N} \rightarrow \mathbb{N}, & \text{where } S \text{ is a state space,} \\
-        & \text{in the most general case of untimed data flow}
+      \alpha &  \text{for all timed MoCs (e.g. SY, DE, CT)}\\
+      \alpha^n, \forall n \in \mathbb{N} & \text{for untimed MoCs, (e.g. SDF)}
     \end{cases}
-  \end{align*}
+  \end{equation*}
 \end{docimage} 
 
 \begin{docimage}{atom-function}
   \begin{equation*}%
-    \dot{\alpha} \rightarrow \beta
+    \breve{\alpha} \rightarrow \beta
   \end{equation*}
 \end{docimage} 
 
 \begin{docimage}{atom-result}
   \begin{equation*}%
-    {\dot{\beta}}
+    {\breve{\beta}}
   \end{equation*}
 \end{docimage} 
 
 \begin{docimage}{atom-context}
   \begin{equation*}%
     \mathtt{ctxt} : \Gamma \times ({\color{black!40}[}\alpha{\color{black!40}]}^n \rightarrow {\color{black!40}[}\beta{\color{black!40}]}^m )
-    \rightarrow ({\dot{\alpha}^n \rightarrow \dot{\beta}^m})
+    \rightarrow ({\breve{\alpha}^n \rightarrow \breve{\beta}^m})
   \end{equation*}
 \end{docimage} 
 
 \begin{docimage}{atom-dot}
   \begin{equation*}%
     \MocFun :
-    ({\dot{\alpha} \rightarrow \beta})
+    ({\breve{\alpha} \rightarrow \beta})
     \rightarrow \mathcal{S}(\alpha) \rightarrow \mathcal{S}(\beta)
   \end{equation*}
 \end{docimage} 
@@ -58,14 +66,14 @@
 \begin{docimage}{atom-star}
   \begin{equation*}%
     \MocApp :
-    \mathcal{S}({\dot{\alpha} \rightarrow \beta})
+    \mathcal{S}({\breve{\alpha} \rightarrow \beta})
     \rightarrow \mathcal{S}(\alpha) \rightarrow \mathcal{S}(\beta)
   \end{equation*}
 \end{docimage}
 
 \begin{docimage}{atom-post}
   \begin{equation*}%
-    \mathcal{S}({\dot{\beta}})
+    \mathcal{S}({\breve{\beta}})
     \rightarrow \mathcal{S}(\beta)
   \end{equation*}
 \end{docimage}
@@ -73,7 +81,7 @@
 \begin{docimage}{atom-pre}
   \begin{equation*}%
     \MocPre :
-    \dot{\alpha}
+    \breve{\alpha}
     \rightarrow \mathcal{S}(\alpha) \rightarrow \mathcal{S}(\alpha)
   \end{equation*}
 \end{docimage}
@@ -91,7 +99,7 @@
 \begin{docimage}{pattern-delay}
   \begin{equation*}%
     \MocDel :
-    T \times \dot{\alpha}
+    T \times \breve{\alpha}
     \rightarrow \mathcal{S}(\alpha) \rightarrow \mathcal{S}(\alpha)
   \end{equation*}
 \end{docimage}
@@ -99,7 +107,7 @@
 \begin{docimage}{pattern-comb}
   \begin{align*}%
     &\MocCmb :
-      ({\dot{V}^n \rightarrow \dot{V}^m})
+      ({\breve{V}^n \rightarrow \breve{V}^m})
       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     &f \MocCmb (s_1,s_2,...s_n) =
       f \MocFun s_1 \MocApp s_2 \MocApp ... \MocApp s_n \triangleleft
@@ -109,7 +117,7 @@
 \begin{docimage}{pattern-reconfig}
   \begin{align*}%
     & \MocCons{reconfig} :
-      \mathcal{S}({\dot{V}^n \rightarrow \dot{V}^m})
+      \mathcal{S}({\breve{V}^n \rightarrow \breve{V}^m})
       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     & \MocCons{reconfig}(sf,s_1,s_2,...s_n) =
       f \MocFun s_1 \MocApp s_2 \MocApp ... \MocApp s_n \triangleleft
@@ -119,8 +127,8 @@
 
 \begin{docimage}{pattern-state}
   \begin{align*}%
-    \MocCons{state} &:({\dot{V}^m_{st} \times  \dot{V}^n \rightarrow \dot{V}^m_{st}})
-                      \times \dot{E}^m_{st}
+    \MocCons{state} &:({\breve{V}^m_{st} \times  \breve{V}^n \rightarrow \breve{V}^m_{st}})
+                      \times \breve{E}^m_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m_{st} \\
     \MocCons{state} &(ns,i^m)(s^n) = ns \MocCmb (st^m, s^n) \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 
@@ -129,8 +137,8 @@
 
 \begin{docimage}{pattern-stated}
   \begin{align*}%
-    \MocCons{stated} &:({\dot{V}^m_{st} \times  \dot{V}^n \rightarrow \dot{V}^m_{st}})
-                      \times \dot{E}^m_{st}
+    \MocCons{stated} &:({\breve{V}^m_{st} \times  \breve{V}^n \rightarrow \breve{V}^m_{st}})
+                      \times \breve{E}^m_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m_{st} \\
     \MocCons{stated} &(ns,i^m)(s^n) = st^m \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 
@@ -139,9 +147,9 @@
 
 \begin{docimage}{pattern-moore}
   \begin{align*}%
-    \MocCons{moore} &:({\dot{V}_{st} \times  \dot{V}^n \rightarrow \dot{V}_{st}})
-                      \times ({\dot{V}_{st} \rightarrow \dot{V}^m})
-                      \times \dot{E}_{st}
+    \MocCons{moore} &:({\breve{V}_{st} \times  \breve{V}^n \rightarrow \breve{V}_{st}})
+                      \times ({\breve{V}_{st} \rightarrow \breve{V}^m})
+                      \times \breve{E}_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     \MocCons{moore} &(ns,od,i^m)(s^n) = od \MocCmb st^m \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 
@@ -150,9 +158,9 @@
 
 \begin{docimage}{pattern-mealy}
   \begin{align*}%
-    \MocCons{mealy} &:({\dot{V}_{st} \times  \dot{V}^n \rightarrow \dot{V}_{st}})
-                      \times ({\dot{V}_{st} \times \dot{V}^n \rightarrow \dot{V}^m})
-                      \times \dot{E}_{st}
+    \MocCons{mealy} &:({\breve{V}_{st} \times  \breve{V}^n \rightarrow \breve{V}_{st}})
+                      \times ({\breve{V}_{st} \times \breve{V}^n \rightarrow \breve{V}^m})
+                      \times \breve{E}_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     \MocCons{mealy} &(ns,od,i^m)(s^n) = od \MocCmb (st^m, s^n) \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 
@@ -161,13 +169,13 @@
 
 \begin{docimage}{timed-context}
   \begin{equation*}%
-    \dot{a} = a  
+    \breve{a} = a  
   \end{equation*}
 \end{docimage} 
 
 \begin{docimage}{sdf-context}
   \begin{equation*}%
-    \dot{a} = a^n \text{, where } n \in \mathbb{N} 
+    \breve{a} = a^n \text{, where } n \in \mathbb{N} 
   \end{equation*}
 \end{docimage} 
 
