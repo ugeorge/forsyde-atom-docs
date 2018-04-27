@@ -131,20 +131,15 @@ www: html
 	@cp -r $(HTML_PATH)/* $(WWW_PATH)/
 	@for f in $(WWW_PATH)/*.html; do\
 	    grep -Pzo "(?s)(?<=\<body\>).*?(?=\</body\>)" $$f > tmp && mv tmp $$f; \
-	    perl -0777 -i -pe 's/<div id="synopsis.*?<\/div>//g' $$f ; \
-	    echo "---" > tmp; \
-	    echo "layout: haddock" >> tmp; \
-	    echo "---" >> tmp; \
-	    echo "" >> tmp; \
-	    echo "$$(cat tmp) \n $$(cat $$f)" > $$f; \
+	    echo "---\nlayout: haddock\n---\n" | cat - $$f > tmp && mv tmp $$f; \
 	done
-	@rm tmp
 	@echo "Integrated HTML page into ForSyDe website at '$(WWW_PATH)'"
 
 # www-distro: www
 # 	@rsync --include "*/" --exclude="*" --include="*.hs" forsyde-atom/src/ gh-pages/src/
 # 	@cd gh-pages && git add src && git commit -m "updated documentation (*auto)" && git push origin master
 # 	@cd work && git stash && git pull origin master
+#	    perl -0777 -i -pe 's/<div id="synopsis.*?<\/div>//g' $$f ; \
 
 #### RULES ####
 
@@ -299,3 +294,15 @@ test:
 	cd forsyde-atom \
 	&& stack haddock  2>&1 | grep 'doc/index' | grep 'forsyde-atom' | xargs dirname | xargs -I {} ls {}/forsyde-atom-$(ATOM_VER)
 	echo $(ATOM_VER)
+
+COMMIT_MSG1 ?= $(shell bash -c 'read -p "Message for forsyde-atom-docs: " msg; echo $$msg')
+COMMIT_MSG2 ?= $(shell bash -c 'read -p "Message for forsyde-atom: " msg; echo $$msg')
+
+dev-push:
+	@git add .
+	@git commit -m "$(COMMIT_MSG1)"
+	@git push origin master
+	cd forsyde-atom \
+	&& git add src forsyde-atom.cabal \
+	&& git commit -m "$(COMMIT_MSG2)" \
+	&& git push origin docs
