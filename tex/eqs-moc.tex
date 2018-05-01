@@ -97,8 +97,7 @@
 
 \begin{docimage}{pattern-delay}
   \begin{equation*}%
-    \MocDel :
-    T \times \breve{\alpha}
+    \MocDel : \mathcal{S}(\alpha)
     \rightarrow \mathcal{S}(\alpha) \rightarrow \mathcal{S}(\alpha)
   \end{equation*}
 \end{docimage}
@@ -106,7 +105,7 @@
 \begin{docimage}{pattern-comb}
   \begin{align*}%
     &\MocCmb :
-      ({\breve{V}^n \rightarrow \breve{V}^m})
+      \context{\Gamma}{({V^n \rightarrow V^m})}
       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     &f \MocCmb (s_1,s_2,...s_n) =
       f \MocFun s_1 \MocApp s_2 \MocApp ... \MocApp s_n \triangleleft
@@ -116,7 +115,7 @@
 \begin{docimage}{pattern-reconfig}
   \begin{align*}%
     & \MocCons{reconfig} :
-      \mathcal{S}({\breve{V}^n \rightarrow \breve{V}^m})
+      \mathcal{S}(\context{\Gamma}{V^n \rightarrow V^m})
       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     & \MocCons{reconfig}(sf,s_1,s_2,...s_n) =
       f \MocFun s_1 \MocApp s_2 \MocApp ... \MocApp s_n \triangleleft
@@ -126,8 +125,8 @@
 
 \begin{docimage}{pattern-state}
   \begin{align*}%
-    \MocCons{state} &:({\breve{V}^m_{st} \times  \breve{V}^n \rightarrow \breve{V}^m_{st}})
-                      \times \breve{E}^m_{st}
+    \MocCons{state} &:\context{\Gamma}({V^m_{st} \times  V^n \rightarrow V^m_{st}})
+                      \times \mathcal{S}^m_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m_{st} \\
     \MocCons{state} &(ns,i^m)(s^n) = ns \MocCmb (st^m, s^n) \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 
@@ -136,8 +135,8 @@
 
 \begin{docimage}{pattern-stated}
   \begin{align*}%
-    \MocCons{stated} &:({\breve{V}^m_{st} \times  \breve{V}^n \rightarrow \breve{V}^m_{st}})
-                      \times \breve{E}^m_{st}
+    \MocCons{stated} &:\context{\Gamma}({V^m_{st} \times  V^n \rightarrow V^m_{st}})
+                      \times \mathcal{S}^m_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m_{st} \\
     \MocCons{stated} &(ns,i^m)(s^n) = st^m \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 
@@ -146,9 +145,9 @@
 
 \begin{docimage}{pattern-moore}
   \begin{align*}%
-    \MocCons{moore} &:({\breve{V}_{st} \times  \breve{V}^n \rightarrow \breve{V}_{st}})
-                      \times ({\breve{V}_{st} \rightarrow \breve{V}^m})
-                      \times \breve{E}_{st}
+    \MocCons{moore} &:\context{\Gamma}({V_{st} \times  V^n \rightarrow V_{st}})
+                      \times \context{\Gamma}({V_{st} \rightarrow V^m})
+                      \times \mathcal{S}^m_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     \MocCons{moore} &(ns,od,i^m)(s^n) = od \MocCmb st^m \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 
@@ -157,9 +156,9 @@
 
 \begin{docimage}{pattern-mealy}
   \begin{align*}%
-    \MocCons{mealy} &:({\breve{V}_{st} \times  \breve{V}^n \rightarrow \breve{V}_{st}})
-                      \times ({\breve{V}_{st} \times \breve{V}^n \rightarrow \breve{V}^m})
-                      \times \breve{E}_{st}
+    \MocCons{mealy} &:\context{\Gamma}({V_{st} \times  V^n \rightarrow V_{st}})
+                      \times \context{\Gamma}({V_{st} \times V^n \rightarrow V^m})
+                      \times \mathcal{S}^m_{st}
                       \rightarrow \mathcal{S}^n \rightarrow \mathcal{S}^m \\
     \MocCons{mealy} &(ns,od,i^m)(s^n) = od \MocCmb (st^m, s^n) \\
                     &\text{where}\ st^m = i^m \MocDel ns \MocCmb (st^m, s^n) 

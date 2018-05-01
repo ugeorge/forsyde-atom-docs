@@ -6,11 +6,13 @@
 
 \begin{docimage}{pattern-delay}
 \begin{tikzpicture}[]
-  \basic[primitive,f={$\noexpand\dot{\alpha}$}](p4)<2,0>{$\MocPhi$};
-  \basic[primitive,f=$T$,left of=p4](p3){$\MocPre$};
+  \basic[primitive](p4)<2,0>{$\MocPhi$};
+  \basic[primitive,left of=p4](p3){$\MocPre$};
   \path[s] (p3) edge[<-] ++(-1,0)
                 edge[->] (p4)
+                edge[<-,|-] ++(-1,.7)
            (p4) edge[->] ++(1,0)
+                edge[<-,|-] ++(-2,.7)
   ; 
   \basic[primitive, left of=p4, xshift=4cm](c1) {$\MocDel$};
   \path[s] (c1) edge[<-] ++(-1,0)
@@ -68,12 +70,13 @@
 
 \begin{docimage}{pattern-state}
 \begin{tikzpicture}[]
-  \basic[primitive,f=$ns$]                 (ns) {$\MocCmb$};
-  \basic[primitiven,f={$i^m$}, above of=ns](mem){$\MocDel$};
+  \basic[primitive,f=$ns$]      (ns) {$\MocCmb$};
+  \basic[primitiven,above of=ns](mem){$\MocDel$};
   \draw[sn,<-] (ns.205) to ++(-1,0) node[anchor=east] {$s^n$};
   \draw[sn,->] (ns) to ++(1,0) node[anchor=north] (a) {$st^m$} to[|-] (mem)
                (a.north) to ++(1,0) node[anchor=west] {$s^m$};
   \path (mem) edge[sn,-|-,deviate=-20pt,->] (ns.155);
+  \draw[sn,<-,|-] (mem) to ++(-1.2,.5)  node[anchor=east] {$i^m$};
 
   \standard[process,ni=2, no=1, nf=2, type=state, f1=$ns$, f2={$i^m$},xshift=5cm](stt)<$(mem)!.5!(ns)$>{};
   \draw[sn,<-] (stt) to ++(-1,0) node[anchor=east] {$s^n$};
@@ -85,12 +88,13 @@
 
 \begin{docimage}{pattern-stated}
 \begin{tikzpicture}[]
-  \basic[primitive,f=$ns$]                 (ns) {$\MocCmb$};
-  \basic[primitiven,f={$i^m$}, right of=ns](mem){$\MocDel$};
+  \basic[primitive,f=$ns$]      (ns) {$\MocCmb$};
+  \basic[primitiven,right of=ns](mem){$\MocDel$};
   \draw[sn,<-] (ns.205) to ++(-1,0) node[anchor=east] {$s^n$};
   \draw[sn,->] (ns) to (mem) to ++(1,0) node[anchor=north] (a) {$st^m$}
-               |- ++(0,1) -- ++(-3.5,0) |- (ns.155) 
+               |- ++(0,.7) -- ++(-3.5,0) |- (ns.155) 
                (a.north) to ++(1,0) node[anchor=west] {$s^m$};
+  \draw[sn,<-,|-] (mem) to ++(-2.8,-.5)  node[anchor=east] {$i^m$};
 
   \standard[process,ni=2, no=1, nf=2, type=stated, f1=$ns$, f2={$i^m$},right of=a](stt)<3,.5>{};
   \draw[sn,<-] (stt) to ++(-1,0) node[anchor=east] {$s^n$};
@@ -102,14 +106,15 @@
 
 \begin{docimage}{pattern-moore}
 \begin{tikzpicture}[]
-  \basic[primitive,f={$ns$}]               (ns) {$\MocCmb$};
-  \basic[primitive,f={$i^m$}, right of=ns](mem){$\MocDel$};
+  \basic[primitive,f={$ns$}]   (ns) {$\MocCmb$};
+  \basic[primitive,right of=ns](mem){$\MocDel$};
   \basic[primitive,f={$od$}, right of=mem] (od) {$\MocCmb$};
   \draw[sn,<-] (ns.205) to ++(-1,0) node[anchor=east] {$s^n$};
   \draw[s,->] (ns) to (mem) to ++(.75,0) node[anchor=north] (a) {$st$}
                |- ++(0,1) -- ++(-3,0) |- (ns.155) 
                (a.north) to (od);
   \draw[sn,->] (od) --++(1,0) node[anchor=west] {$s^m$};
+  \draw[s,<-,|-] (mem) to ++(-2.8,-.5)  node[anchor=east] {$i^m$};
 
   \standard[process,ni=2, no=1, nf=2, type=moore, f1=$ns$, f2={$i^m$},right of=od](stt)<3,.24>{};
   \draw[sn,<-] (stt) to ++(-1,0) node[anchor=east] {$s^n$};
@@ -121,8 +126,8 @@
 
 \begin{docimage}{pattern-mealy}
 \begin{tikzpicture}[]
-  \basic[primitive,f={$ns$}]               (ns) {$\MocCmb$};
-  \basic[primitive,f={$i^m$}, right of=ns](mem){$\MocDel$};
+  \basic[primitive,f={$ns$}]   (ns) {$\MocCmb$};
+  \basic[primitive,right of=ns](mem){$\MocDel$};
   \basic[primitive,f={$od$}, right of=mem] (od) {$\MocCmb$};
   \draw[sn] (ns.205) -- ++(-.5,0) node[inner sep=0] (b){} -- ++(-.5,0) node[anchor=east] {$s^n$};
   \draw[s,->] (ns) to (mem) to ++(.75,0) node[anchor=north] (a) {$st$}
@@ -130,6 +135,7 @@
                (a.north) to (od);
   \draw[sn,->] (od) --++(1,0) node[anchor=west] {$s^m$};
   \draw[sn,->] (b) --++(0,-.5) -| (od);
+  \draw[s,<-,|-] (mem) to ++(-2.8,-1)  node[anchor=east] {$i^m$};
 
   \standard[process,ni=2, no=1, nf=2, type=mealy, f1=$ns$, f2={$i^m$},right of=od](stt)<3,.24>{};
   \draw[sn,<-] (stt) to ++(-1,0) node[anchor=east] {$s^n$};
