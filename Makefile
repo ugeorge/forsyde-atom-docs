@@ -1,9 +1,6 @@
 MKDIR        := mkdir -p
 ATOM_REPO    := git@github.com:ugeorge/forsyde-atom.gi
 EXAMP_REPO   := git@github.com:ugeorge/forsyde-atom-examples.git
-HADDOCK_REPO := git@github.com:ugeorge/haddock.git
-
-HADDOCK_BIN=$(HOME)/.local/bin/haddock
 
 HTML_PATH:=api/html
 LATEX_PATH:=api/latex
@@ -18,11 +15,13 @@ target-format=pdf/$(1)-$(2).pdf
 
 ##################### DO NOT CHANGE FROM HERE #####################
 
-WORKSPACE = gh-pages forsyde-atom examples api haddock
+WORKSPACE = gh-pages forsyde-atom examples api
 WWW_PATH = gh-pages/api
 ATOM_LIB = forsyde-atom/dist
 DUMP_SRC = atom-docplots/Main.hs
 DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
+CABAL = stack exec --no-ghc-package-path -- cabal
+
 
 STYLE = $(wildcard tex/*.sty)
 FLX_DUMP = $(sort $(foreach file,$(DUMP_SRC),$(call make-flx-targets,$(file))))
@@ -30,7 +29,6 @@ PDF_SRCS = $(foreach file,$(FILES),$(call make-pdf-targets,$(file)))
 PDF_FIGS = $(sort $(foreach file,$(FILES),$(call make-pdf-targets,$(file))))
 PNG_FIGS = $(patsubst pdf/%.pdf, png/%.png, $(PDF_SRCS))
 ATOM_SRCS = $(shell find forsyde-atom/src -type f -name '*.hs') forsyde-atom/forsyde-atom.cabal
-HADDOCK_SRCS = $(shell find haddock/ -type f -name '*.hs') haddock/haddock.cabal
 
 # ATOM_VER = $(shell cd forsyde-atom && git describe --tags | sed 's|-.*$$||g')
 ATOM_VER = $(shell sed -n -e 's/^version: *//p' forsyde-atom/forsyde-atom.cabal)
@@ -95,15 +93,13 @@ endef
 workspace:
 #	checking dependencies
 	@echo "* checking dependencies..."
-	@if ! haddock --version; then cabal install haddock; fi
-	@if ! hscolour --version; then cabal install hscolour; fi
+	@if ! stack --version; then echo "Could not find stack! Aborting."; exit 1; fi
 	@test -f $(shell kpsewhich --all forsyde.sty) \
 	    || (echo "Could not find ForSyDe-LaTex. Please install it from https://forsyde.github.io/forsyde-latex/"; exit 1)
 #       creating folders
 	@echo "* creating folders..."
 	@if [ ! -d forsyde-atom ]; then git clone $(ATOM_REPO) -b docs; fi
 	@if [ ! -d gh-pages ]; then git clone $(ATOM_REPO) -b gh-pages gh-pages; fi
-	@if [ ! -d haddock ];  then git clone $(HADDOCK_REPO) -b gh-pages gh-pages; fi
 	@if [ ! -d examples ]; then git clone $(EXAMP_REPO) examples; fi
 	@$(MKDIR) api
 	@$(MKDIR) png
@@ -121,9 +117,11 @@ png: pdf $(PNG_FIGS)
 html: png Makefile $(STYLE)
 	@rm -rf $(HTML_PATH)
 	@cp -f png/* forsyde-atom/fig/
-	@cd forsyde-atom \
-	&& (stack haddock 2>&1 | grep 'doc/index' | grep 'forsyde-atom' \
-	    | xargs dirname | xargs -I {} mv {}/forsyde-atom-$(ATOM_VER) ../$(HTML_PATH)) \
+	cd forsyde-atom \
+	&& ($(CABAL) haddock --haddock-html-location='https://hackage.haskell.org/package/$pkg-$version/docs' \
+	--haddock-hyperlink-source --haddock-quickjump  \
+	| awk 'END {print $$NF}' | xargs dirname \
+	| xargs -I {} mv {} ../$(HTML_PATH)) \
 	&& echo "Generated HTML API doc in '$(HTML_PATH)'"
 
 www: html
@@ -153,7 +151,8 @@ $(foreach file,$(FILES),\
 # Rule for PNG figures: convert
 png/%.png: pdf/%.pdf
 	@echo $@
-	@convert -density 150 $< -quality 90 $@
+#	@convert -density 150 $< -quality 90 $@
+	pdftoppm $< $(basename $@) -png -f 1 -singlefile
 
 $(ATOM_LIB): $(ATOM_SRCS)
 	@cd forsyde-atom \
@@ -165,11 +164,6 @@ $(DUMP_BIN): $(DUMP_SRC)
 	  && cabal sandbox add-source ../forsyde-atom \
 	  && cabal install \
 	  && cabal build -j4
-
-$(HADDOCK_BIN): $(HADDOCK_SRCS)
-	@cd haddock \
-	&& stack config \
-	&& stack install 
 
 # .PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex prep-atom
 
