@@ -104,9 +104,9 @@
 \begin{docimage}{pattern-generate}
 \begin{tikzpicture}
   \standard[process, moc=de, f={$\lambda\ a\ b\rightarrow (a+1,b+2)$;$(3,1),(1,2)$}, no=2, type=generate](p1){};
-  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{7}
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
     \signalDE*[trunc]{data/de-generate-o1.flx}
-    \signalDE*[trunc]{data/de-generate-o1.flx}
+    \signalDE*[trunc]{data/de-generate-o2.flx}
   \end{signalsDE}
   \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
   \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);

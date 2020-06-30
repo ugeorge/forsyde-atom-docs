@@ -19,7 +19,7 @@ WORKSPACE = gh-pages forsyde-atom examples api
 WWW_PATH = gh-pages/api
 ATOM_LIB = forsyde-atom/dist
 DUMP_SRC = atom-docplots/Main.hs
-DUMP_BIN = atom-docplots/dist/build/atom-docplots/atom-docplots
+DUMP_BIN = atom-docplots
 CABAL = stack exec --no-ghc-package-path -- cabal
 
 
@@ -79,8 +79,7 @@ endef
 
 define flx-template
   $(2) : $(1) $(DUMP_BIN) $(ATOM_LIB)
-	@cd atom-docplots && cabal build -j4
-	./$(DUMP_BIN)
+	$(DUMP_BIN)
 	@rm -rf tex/data
 	@mv data tex
 endef
@@ -118,7 +117,7 @@ html: png Makefile $(STYLE)
 	@rm -rf $(HTML_PATH)
 	@cp -f png/* forsyde-atom/fig/
 	cd forsyde-atom \
-	&& ($(CABAL) haddock --haddock-html-location='https://hackage.haskell.org/package/$pkg-$version/docs' \
+	&& ($(CABAL) haddock --haddock-html-location='https://hackage.haskell.org/package/$$pkg-$$version/docs' \
 	--haddock-hyperlink-source --haddock-quickjump  \
 	| awk 'END {print $$NF}' | xargs dirname \
 	| xargs -I {} mv {} ../$(HTML_PATH)) \
@@ -155,15 +154,11 @@ png/%.png: pdf/%.pdf
 	pdftoppm $< $(basename $@) -png -f 1 -singlefile
 
 $(ATOM_LIB): $(ATOM_SRCS)
-	@cd forsyde-atom \
+	cd forsyde-atom \
 	&& stack install
 
 $(DUMP_BIN): $(DUMP_SRC)
-	@cd atom-docplots \
-	  && cabal sandbox init \
-	  && cabal sandbox add-source ../forsyde-atom \
-	  && cabal install \
-	  && cabal build -j4
+	cd atom-docplots && stack install
 
 # .PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex prep-atom
 
