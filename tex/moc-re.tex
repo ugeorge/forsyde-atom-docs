@@ -1,0 +1,341 @@
+\documentclass{standalone} 
+\usepackage[tikz,plot,math]{forsyde}
+\usepackage{forsyde-atom-docs}
+
+\begin{document}
+
+\begin{docimage}{principle}
+\begin{tikzpicture}
+  \standard[process, moc=re, f={$f$}, type=comb](p1){};
+  \node[anchor=south west,xshift=-1.5cm] (i) at (p1) {$s_i^m$};
+  \node[anchor=south east,xshift=1.5cm] (o) at (p1) {$s_o^n$};
+  \path[sn] (p1) edge[<-,sn] (i.south west) edge[sn,->] (o.south east);
+  %%%%
+  \node[anchor=south west,xshift=1cm] (i) at (o.south east) {$s_i^m$};
+  \node[] at ($(o)!.5!(i)$) {$\equiv$};
+  \standard[process, moc=re, type=reconfig,xshift=2cm](p1)<i.south west>{kernel};
+  \node[anchor=south east,xshift=2cm] (o) at (p1) {$s_o^n$};
+  \node[rounded corners, draw, thick, double,inner sep=7pt,above of=p1, yshift=.5cm] (dt) {\bf detector};
+  \path[sn] (p1) edge[<-,sn] (i.south west) edge[sn,->] (o.south east)
+  ([yshift=1pt]i.south east) edge[sn,|-,->] (dt) (dt) edge[s,->] (p1);
+  \node[anchor=west] at ($(dt.south)!.5!(p1.north)$) {$\mathtt{Bool}^m\vdash f$};
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{example}
+\begin{tikzpicture}
+  \standard[process, ni=2, moc=re, f={$\Sigma$}, type=comb](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE[instants]{      1:2, 2:4, 3:6, 4:7, 5:8,      1:200}
+    \signalDE[instants]{ 1:0, 2:2,      3:6,      4:8, 5:9, 1:200}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2); 
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE[instants]{ 1:0, 3:2, 2:4, 6:6, 4:7, 9:8, 5:9, 1:200}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{example2}
+\begin{tikzpicture}
+  \standard[process, ni=2, moc=re, f={$f$}, type=comb](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE[instants]{      1:2, 2:4, 3:6, 4:7, 5:8,      1:200}
+    \signalDE[instants]{ 1:0, 2:2,      3:6,      4:8, 5:9, 1:200}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2); 
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE[instants]{      3:2, 2:4, 6:6, 4:7, 9:8, 1:200}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{pattern-comb}
+\begin{tikzpicture}
+  \standard[process, ni=2,no=2, moc=re, f={$f$}, type=comb](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE*[trunc,instants]{data/re-comb-i1.flx}
+    \signalDE*[trunc,instants]{data/re-comb-i2.flx}
+  \end{signalsDE}%
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2);  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE*[trunc,instants]{data/re-comb-o1.flx}
+    \signalDE*[trunc,instants]{data/re-comb-o2.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+  \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{pattern-delay}
+\begin{tikzpicture}
+  \standard[process, moc=re, f={$3$;$0$}, type=delay](p1){};
+   \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{13}
+    \signalDE*[trunc,instants]{data/re-delay-i1.flx}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,->] (p1.w1);
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{13}
+    \signalDE*[trunc,instants]{data/re-delay-o1.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{pattern-delayp}
+\begin{tikzpicture}
+  \standard[process, ni=2, moc=re, type=delay'](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{13}
+    % \signalDE{1:0, 2:2, 3:6, 4:8, 5:9}
+    % \signalDE{3:0, 4:4, 5:5, 6:8, 7:9}
+    \signalDE*[trunc,instants]{data/re-delayp-i1.flx}
+    \signalDE*[trunc,instants]{data/re-delayp-i2.flx}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2);
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{13}
+    % \signalDE{ 1 :0, 3 :2, 4 :6, 5 :7, 6 :10, 7 :11}
+    \signalDE*[trunc,instants]{data/re-delayp-o1.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{pattern-udelay}
+\begin{tikzpicture}
+  \standard[process, moc=de, f={$3$}, type=unsafeDelay](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{13}
+    % \signalDE{1:0, 2:2, 3:6, 4:8, 5:9}
+    \signalDE*[trunc,instants]{data/re-udelay-i1.flx}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{13}
+    % \signalDE{ 1 :0, 3 :2, 4 :6, 5 :7, 6 :10, 7 :11}
+    \signalDE*[trunc,instants]{data/re-udelay-o1.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{pattern-generate}
+\begin{tikzpicture}
+  \standard[process, moc=re, f={$ns$;$(3,1),(1,2)$}, no=2, type=generate](p1){};
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE*[trunc,instants]{data/re-generate-o1.flx}
+    \signalDE*[trunc,instants]{data/re-generate-o2.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+  \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{pattern-stated}%
+\begin{tikzpicture}
+  \standard[process, moc=re, f={$+$;$1$}, type=stated](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west},xscale=.4]{10}
+    % \signalDE{1:0, 2:2, 3:6, 4:8, 5:9}
+    \signalDE*[trunc,instants]{data/re-stated-i1.flx}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east},xscale=.4]{10}
+    % \signalDE{1 :0, 2 :6, 3 :8, 5 :12, 7 :14, 8 :15}
+    \signalDE*[trunc,instants]{data/re-stated-o1.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{pattern-state}
+\begin{tikzpicture}
+  \standard[process, moc=re, f={$+$;$1$}, type=state](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west},xscale=.4]{10}
+    % \signalDE{1:0, 2:2, 3:6, 4:8, 5:9}
+    \signalDE*[trunc,instants]{data/re-state-i1.flx}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east},xscale=.4]{10}
+    % \signalDE{2 :0, 3 :2, 5 :6, 7 :8, 8 :9, 10 :12, 12 :14}
+    \signalDE*[trunc,instants]{data/re-state-o1.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage}
+
+
+\begin{docimage}{pattern-moore}
+\begin{tikzpicture}
+  \standard[process, moc=re, ni=2, f={$ns$;$od$;$1$}, type=moore](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west},xscale=.4]{10}
+    % \signalDE{1:0, 2:2, 3:6, 4:8, 5:9}
+    \signalDE*[trunc,instants]{data/re-moore-i1.flx}
+    \signalDE*[trunc,instants]{data/re-moore-i2.flx}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2);  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east},xscale=.4]{10}
+    % \signalDE{ 2 :0, 3 :6, 4 :8, 6 :12, 8 :14, 9 :15}
+    \signalDE*[trunc,instants]{data/re-moore-o1.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage}
+
+
+\begin{docimage}{pattern-mealy}
+\begin{tikzpicture}
+  \standard[process, moc=re, ni=2, f={$ns$;$od$;$1$}, type=mealy](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west},xscale=.4]{10}
+    % \signalDE{1:0, 2:2, 3:6, 4:8, 5:9}
+    \signalDE*[trunc,instants]{data/re-mealy-i1.flx}
+    \signalDE*[trunc,instants]{data/re-mealy-i2.flx}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1); 
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2); \begin{signalsDE}[grid,timestamps=5,outputs={p1.east},xscale=.4]{10}
+    % \signalDE{0 :0, -1 :2, -1 :6, -1 :8, -2 :9, 0 :12, 2 :14}
+    \signalDE*[trunc,instants]{data/re-mealy-o1.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{pattern-syncandhold}
+\begin{tikzpicture}
+  \standard[process, ni=2,no=2, moc=re, type=syncAndHold](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE*[trunc,instants]{data/re-syncandhold-i1.flx}
+    \signalDE*[trunc,instants]{data/re-syncandhold-i2.flx}
+  \end{signalsDE}%
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2);  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE*[trunc,instants]{data/re-syncandhold-o1.flx}
+    \signalDE*[trunc,instants]{data/re-syncandhold-o2.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+  \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{pattern-syncandobs}
+\begin{tikzpicture}
+  \standard[process, ni=2,no=2, moc=re, type=syncAndObs](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE*[trunc,instants]{data/re-syncandobs-i1.flx}
+    \signalDE*[trunc,instants]{data/re-syncandobs-i2.flx}
+  \end{signalsDE}%
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2);  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE*[trunc,instants]{data/re-syncandobs-o1.flx}
+    \signalDE*[trunc,instants]{data/re-syncandobs-o2.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+  \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);
+\end{tikzpicture}
+\end{docimage} 
+
+
+\begin{docimage}{pattern-syncandfill}
+\begin{tikzpicture}
+  \standard[process, ni=2,no=2, moc=re, type=syncAndFill](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE*[trunc,instants]{data/re-syncandfill-i1.flx}
+    \signalDE*[trunc,instants]{data/re-syncandfill-i2.flx}
+  \end{signalsDE}%
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2);  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE*[trunc,instants]{data/re-syncandfill-o1.flx}
+    \signalDE*[trunc,instants]{data/re-syncandfill-o2.flx}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+  \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);
+\end{tikzpicture}
+\end{docimage} 
+
+
+\begin{docimage}{pattern-tode}
+\begin{tikzpicture}
+  \standard[process, ni=2, no=2, moc=re, type=toDE](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE[instants]{ 1:0, 2:2,           3:6, 4:8, 5:9,      1:200}
+    \signalDE[instants]{ 1:0,      2:3, 3:4,      4:8,     5:10, 1:200}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2); 
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE[]{ 1:0, 2:2,           3:6, 4:8, 5:9,      1:200}
+    \signalDE[]{ 1:0,      2:3, 3:4,      4:8,     5:10, 1:200}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+  \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{pattern-fromde}
+\begin{tikzpicture}
+  \standard[process, ni=2, no=2, moc=re, type=fromDE](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE[]{ 1:0, 2:2,           3:6, 4:8, 5:9,      1:200}
+    \signalDE[]{ 1:0,      2:3, 3:4,      4:8,     5:10, 1:200}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2); 
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE[instants]{ 1:0, 2:2,           3:6, 4:8, 5:9,      1:200}
+    \signalDE[instants]{ 1:0,      2:3, 3:4,      4:8,     5:10, 1:200}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+  \path (sigplot.w2) edge[s,-|-,<-] (p1.e2);
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{pattern-tosyc}
+\begin{tikzpicture}
+  \standard[process, ni=2, no=3, moc=re, type=toSYC](p1){};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE[instants]{ 1:0, 1:200}
+    \signalDE[instants]{ 1:1, 2:2, 3:6, 4:8, 5:9, 1:200}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2); 
+  \outputSY*[yshift=.4cm]  <p1.e1> {0,1,2,6,8,9};
+  \outputSY*[]  <p1.e2> {1,$\bot$,$\bot$,$\bot$,$\bot$,$\bot$,$\bot$};
+  \outputSY*[yshift=-.4cm]  <p1.e3> {$\bot$,1,2,3,4,5};
+\end{tikzpicture}
+\end{docimage} 
+
+\begin{docimage}{pattern-fromsyc}
+\begin{tikzpicture}
+  \standard[process, ni=2, no=1, moc=re, type=fromSYC](p1){};
+  \inputSY*[yshift=.2cm]  <p1.w1> {0,3,4,6,9};
+  \inputSY*[yshift=-.2cm]  <p1.w2> {1,2,$\bot$,4,5};
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE[instants]{ 1:0, 2:3, 4:6, 5:9, 1:200}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{pattern-embedsy}
+\begin{tikzpicture}
+  \standard[process, ni=2, moc=sy, f={$s\ a\ b\ \noexpand\mapsto a+b-s$;$1$}, type=Clocked.stated](p1){};
+  \cluster[process, inner sep=16pt, moc=de, type=embedSY] <(p1)> {};
+  \begin{signalsDE}[grid,timestamps=5,inputs={p1.west}]{11}
+    \signalDE[instants]{1:0, 2:2, 3:6, 4:8, 5:9, 1:200}
+    \signalDE[instants]{1:0, 2:2, 3:6, 4:8, 5:9, 1:200}
+  \end{signalsDE}
+  \path (sigplot.e1) edge[s,-|-,->] (p1.w1);
+  \path (sigplot.e2) edge[s,-|-,->] (p1.w2); 
+  \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{11}
+    \signalDE[instants]{1:0, 1:2, 3:6, 3:8, 5:9, 1:200}
+  \end{signalsDE}
+  \path (sigplot.w1) edge[s,-|-,<-] (p1.e1);
+\end{tikzpicture}
+\end{docimage} 
+
+
+\end{document}
+ 
+%%% Local Variables:
+%%% TeX-command-default: "Make"
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

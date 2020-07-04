@@ -2,12 +2,14 @@ module Main where
 
 import ForSyDe.Atom.Utility.Plot
 import ForSyDe.Atom.MoC.DE as DE
+import ForSyDe.Atom.MoC.DE.React as RE
 import ForSyDe.Atom.MoC.CT as CT
 import ForSyDe.Atom.MoC.Time as T
 import ForSyDe.Atom.MoC.TimeStamp
 
 
 config = silentCfg { rate=0.1, path="data" }
+
 
 main :: IO ()
 main = do
@@ -23,6 +25,19 @@ main = do
   deMoore    >>= print
   deMealy    >>= print
   deSync     >>= print
+  -------------------------
+  reDelay       >>= print
+  reDelay'      >>= print
+  reUDelay      >>= print
+  reComb        >>= print
+  reGenerate    >>= print
+  reStated      >>= print
+  reState       >>= print
+  reMoore       >>= print
+  reMealy       >>= print
+  reSyncAndHold >>= print
+  reSyncAndFill >>= print
+  reSyncAndObs  >>= print
   -------------------------
   ctExamp    >>= print
   ctDelay    >>= print
@@ -57,7 +72,6 @@ deDelay' = dumpLatex $ prepareL cfg [in1, in2, out]
     in1 = DE.readSignal "{1@0, 2@2, 3@6, 4@8, 5@9}" :: DE.Signal Int
     in2 = DE.readSignal "{3@0, 4@4, 5@5, 6@8, 7@9}" :: DE.Signal Int
     out = DE.delay' in1 in2
-
 
 deComb = dumpLatex $ prepareL cfg [in1, in2, out1, out2]
   where
@@ -136,6 +150,110 @@ deSync = dumpLatex $ prepareL cfg [in1, in2, out1, out2]
     in1 = DE.readSignal "{1@0, 2@2, 3@6, 4@8,  5@9}"  :: DE.Signal Int
     in2 = DE.readSignal "{1@0, 2@5, 3@6, 4@10, 5@12}" :: DE.Signal Int
     (out1, out2) = DE.sync2 in1 in2
+
+--------------- DE.React MoC ---------------
+
+reDelay = dumpLatex $ prepareL cfg [inp, out]
+  where
+    cfg = config { labels = ["re-delay-i1", "re-delay-o1"] }
+    inp = RE.readSignal "{1@2, 2@3, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    out = RE.delay 3 0 inp
+
+
+reDelay' = dumpLatex $ prepareL cfg [in1, in2, out]
+  where
+    cfg = config {
+      labels = ["re-delayp-i1", "re-delayp-i2", "re-delayp-o1"] }
+    in1 = RE.readSignal "{1@(-1), 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    in2 = RE.readSignal "{3@2, 4@4, 5@5, 6@8, 7@9}" :: RE.Signal Int
+    out = RE.delay' in1 in2
+    
+reUDelay = dumpLatex $ prepareL cfg [in1, out]
+  where
+    cfg = config {
+      labels = ["re-udelay-i1", "re-udelay-o1"] }
+    in1 = RE.readSignal "{1@(-1), 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    out = RE.unsafeDelay 3 in1
+
+reComb = dumpLatex $ prepareL cfg [in1, in2, out1, out2]
+  where
+    cfg = config {
+      labels = ["re-comb-i1", "re-comb-i2", "re-comb-o1", "re-comb-o2"] }
+    in1 = RE.instant 1
+    in2 = RE.readSignal "{3@2, 4@4, 5@5, 6@8, 7@9}" :: RE.Signal Int
+    (out1,out2) = RE.comb22 f in1 in2
+      where f [a] [b] = ([a + b], [a - b])
+            f [a] []  = ([a], [a])
+            f [] [b]  = ([], [b])
+            f _  _    = ([], [])
+
+reSyncAndHold = dumpLatex $ prepareL cfg [in1, in2, out1, out2]
+  where
+    cfg = config {
+      labels = ["re-syncandhold-i1", "re-syncandhold-i2", "re-syncandhold-o1", "re-syncandhold-o2"] }
+    in1 = RE.readSignal "{1@1, 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    in2 = RE.readSignal "{3@2, 4@4, 5@5, 6@8, 7@9}" :: RE.Signal Int
+    (out1,out2) = RE.syncAndHold2 (0,0) in1 in2
+
+reSyncAndObs = dumpLatex $ prepareL cfg [in1, in2, out1, out2]
+  where
+    cfg = config {
+      labels = ["re-syncandobs-i1", "re-syncandobs-i2", "re-syncandobs-o1", "re-syncandobs-o2"] }
+    in1 = RE.readSignal "{1@1, 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    in2 = RE.readSignal "{3@2, 4@4, 5@5, 6@8, 7@9}" :: RE.Signal Int
+    (out1,out2) = RE.syncAndObs11 0 in1 in2
+
+reSyncAndFill = dumpLatex $ prepareL cfg [in1, in2, out1, out2]
+  where
+    cfg = config {
+      labels = ["re-syncandfill-i1", "re-syncandfill-i2", "re-syncandfill-o1", "re-syncandfill-o2"] }
+    in1 = RE.readSignal "{1@1, 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    in2 = RE.readSignal "{3@2, 4@4, 5@5, 6@8, 7@9}" :: RE.Signal Int
+    (out1,out2) = RE.syncAndFill2 (0,0) in1 in2
+
+
+reGenerate = dumpLatex $ prepareL cfg [out1, out2]
+  where
+    cfg = config { labels = ["re-generate-o1", "re-generate-o2"] }
+    (out1,out2) = RE.generate2 (\a b -> (map (+1) a,map (+2) b)) ((3,1),(1,2))
+      :: (RE.Signal Int, RE.Signal Int) 
+
+reStated = dumpLatex $ prepareL cfg [inp, out]
+  where
+    cfg = config { labels = ["re-stated-i1", "re-stated-o1"] }
+    inp = RE.readSignal "{1@1, 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    out = RE.stated11 f 1 inp
+      where f s [a] = s + a
+
+reState = dumpLatex $ prepareL cfg [inp, out]
+  where
+    cfg = config { labels = ["re-state-i1", "re-state-o1"] }
+    inp = RE.readSignal "{1@1, 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    out = RE.state11 f 1 inp
+      where f s [a] = s + a
+
+reMoore = dumpLatex $ prepareL cfg [in1, in2, out]
+  where
+    cfg = config { labels = ["re-moore-i1", "re-moore-i2", "re-moore-o1"] }
+    in1 = RE.readSignal "{1@1, 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    in2 = RE.readSignal "{1@2, 1@3, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    out = RE.moore21 ns od 1 in1 in2
+      where ns s [a] [b]  = s + a + b
+            ns s []  [b]  = s
+            ns _ _   _    = 0
+            od s = [s + 1] 
+
+reMealy = dumpLatex $ prepareL cfg [in1, in2, out]
+  where
+    cfg = config { labels = ["re-mealy-i1", "re-mealy-i2", "re-mealy-o1"] }
+    in1 = RE.readSignal "{1@1, 2@2, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    in2 = RE.readSignal "{1@2, 1@3, 3@6, 4@8, 5@9}" :: RE.Signal Int
+    out = RE.mealy21 ns od 1 in1 in2
+      where ns s [a] [b]  = s + a + b
+            ns s []  [b]  = s
+            ns _ _   _    = 0
+            od s [a] [b] = [s + a - b]
+            od s _   _   = [s]
 
 --------------- CT MoC ---------------
 

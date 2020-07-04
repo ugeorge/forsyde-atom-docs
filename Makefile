@@ -7,7 +7,7 @@ LATEX_PATH:=api/latex
 PRETTY_PATH:=api/latex-pretty
 
 FILES = eqs-exb misc \
-	eqs-moc moc moc-sy moc-de moc-ct moc-sdf \
+	eqs-moc moc moc-sy moc-de moc-re moc-ct moc-sdf \
 	eqs-skel skel eqs-skel-vector skel-vector-func \
 	skel-vector-comm
 
@@ -78,7 +78,8 @@ define pdf-template
 endef
 
 define flx-template
-  $(2) : $(1) $(DUMP_BIN) $(ATOM_LIB)
+  $(2) : $(1) $(ATOM_LIB)
+	cd atom-docplots && stack install
 	$(DUMP_BIN)
 	@rm -rf tex/data
 	@mv data tex
@@ -157,8 +158,6 @@ $(ATOM_LIB): $(ATOM_SRCS)
 	cd forsyde-atom \
 	&& stack install
 
-$(DUMP_BIN): $(DUMP_SRC)
-	cd atom-docplots && stack install
 
 # .PHONY: manual html latex-raw latex-pretty pdf png prep-pdf prep-png prep-html prep-latex prep-atom
 

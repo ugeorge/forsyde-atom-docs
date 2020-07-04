@@ -83,12 +83,11 @@
   \path (sigplot.e2) edge[s,-|-,->] (p1.w2);
   \begin{signalsDE}[grid,timestamps=5,outputs={p1.east}]{13}
     % \signalDE{ 1 :0, 3 :2, 4 :6, 5 :7, 6 :10, 7 :11}
-    \signalDE*[trunc]{data/de-reconfig-o1.flx}
+    \signalDE*[trunc]{data/de-delayp-o1.flx}
   \end{signalsDE}
   \path (sigplot.w1) edge[s,<-] (p1.e1);
 \end{tikzpicture}
 \end{docimage} 
-
 
 \begin{docimage}{pattern-constant}
 \begin{tikzpicture}
