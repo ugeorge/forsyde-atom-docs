@@ -193,6 +193,23 @@
 \end{tikzpicture}
 \end{docimage}
 
+\begin{docimage}{tosdfp}
+\begin{tikzpicture}[]
+  \standard[process, ni=1, moc=sdf, type=toSDF'](p1){};
+  \node[anchor=south east, xshift=-1cm] (p1w1) at (p1.w1) {%
+    $\begin{array}{cccc}
+      \vbvec & \vbvec & \vbvec & \vbvec \\
+      1  & 3  & 5  & 7  \\
+      2  & 4  & 6  & 8  \\
+      \vevec & \vevec & \vevec & \vevec
+    \end{array}$
+  };
+  \outputSY*  <p1.e1> {1,2,3,4,5,6,7,8};
+  \path[s,<-] (p1.e1) edge (p1w1.south west);
+  \resetportinfo{p1}\wpinfo{2}
+\end{tikzpicture}
+\end{docimage}
+
 
 \begin{docimage}{zipx}
 \begin{tikzpicture}[]\scriptsize

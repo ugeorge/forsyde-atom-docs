@@ -7,7 +7,7 @@ LATEX_PATH:=api/latex
 PRETTY_PATH:=api/latex-pretty
 
 FILES = eqs-exb misc \
-	eqs-moc moc moc-sy moc-de moc-re moc-ct moc-sdf \
+	eqs-moc moc moc-sy moc-de moc-re moc-ct moc-sdf moc-ddf \
 	eqs-skel skel eqs-skel-vector skel-vector-func \
 	skel-vector-comm
 
