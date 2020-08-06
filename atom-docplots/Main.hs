@@ -6,13 +6,18 @@ import ForSyDe.Atom.MoC.DE.React as RE
 import ForSyDe.Atom.MoC.CT as CT
 import ForSyDe.Atom.MoC.Time as T
 import ForSyDe.Atom.MoC.TimeStamp
+import ForSyDe.Atom.Prob (histogram)
+import ForSyDe.Atom.Prob.Uniform as UP
+import ForSyDe.Atom.Prob.Normal as  NP
 
+import System.Random
 
 config = silentCfg { rate=0.1, path="data" }
 
 
 main :: IO ()
 main = do
+  gen <- getStdGen
   putStrLn "Dumping the following files:"
   deDelay    >>= print
   deDelay'   >>= print
@@ -56,7 +61,12 @@ main = do
   ctSampDE1  >>= print
   ctSampDE2  >>= print
   ctSubsig   >>= print
-  
+  -------------------------
+  probUniform gen  >>= print
+  probUniformR gen >>= print
+  probUniformD gen >>= print
+  probNormal gen   >>= print
+  probNormal' gen  >>= print
 --------------- DE MoC ---------------
 
 deDelay = dumpLatex $ prepareL cfg [inp, out]
@@ -272,14 +282,14 @@ ctDelay = dumpLatex $ prepareL cfg [inp, out]
   where
     cfg = config { xmax = 10
                  , labels = ["ct-delay-i1", "ct-delay-o1"] }
-    inp = CT.infinite (T.sin)
+    inp = CT.infinite (T.sin) :: CT.Signal Time
     out = CT.delay 2 (\_ -> 0) inp
 
 ctDelay' = dumpLatex $ prepareL cfg [in2, in1, out]
   where
     cfg = config { xmax = 10,
       labels = ["ct-delayp-i1", "ct-delayp-i2", "ct-delayp-o1"] }
-    in1 = CT.infinite (T.sin)
+    in1 = CT.infinite (T.sin) :: CT.Signal Time
     in2 = CT.signal [(0, \_ -> 0), (2, \_ -> 1)]
     out = CT.delay' in2 in1
 
@@ -289,7 +299,7 @@ ctComb = dumpLatex $ prepareL cfg [in1, in2, out1, out2]
     cfg = config { xmax = 10,
       labels = ["ct-comb-i1", "ct-comb-i2", "ct-comb-o1"
                , "ct-comb-o2"] }
-    in1 = CT.infinite (T.sin)
+    in1 = CT.infinite (T.sin) :: CT.Signal Time
     in2 = CT.signal [(0,\_->0), (pi',\_->1), (2*pi',\_->0), (3*pi',\_->1)]
     (out1,out2) = CT.comb22 (\a b-> (a+b,a*b)) in1 in2
 
@@ -299,7 +309,7 @@ ctReconfig = dumpLatex $ prepareL cfg [in2, out]
     cfg = config { xmax = 10,
       labels = ["ct-reconfig-i2", "ct-reconfig-o1"] }
     in1 = CT.signal [(0,\_->(*0)),(pi',\_->(+1)),(2*pi',\_->(*0)),(3*pi',\_->(+1))]
-    in2 = CT.infinite (T.sin)
+    in2 = CT.infinite (T.sin) :: CT.Signal Time
     out = CT.reconfig11 in1 in2
 
 ctConstant = dumpLatex $ prepareL cfg [out]
@@ -311,7 +321,7 @@ ctInfinite = dumpLatex $ prepareL cfg [out1, out2]
   where
     cfg = config { xmax = 10
                  , labels = ["ct-infinite-o1", "ct-infinite-o2"] }
-    (out1,out2) = CT.infinite2 (T.sin, T.cos)
+    (out1,out2) = CT.infinite2 (T.sin, T.cos) :: (CT.Signal Time, CT.Signal Time)
 
 ctGenerate = dumpLatex $ prepareL cfg [out]
   where
@@ -371,7 +381,7 @@ ctToDE = dumpLatex $ prepareL cfg [inp]
   where
     cfg = config { xmax = 9
                  , labels = ["ct-tode-i1"] }
-    inp = CT.signal [(0, T.sin), (3,T.cos), (6,T.sin)]
+    inp = CT.signal [(0, T.sin), (3,T.cos), (6,T.sin)] :: CT.Signal Time
 
 -- >>> let s = CT.infinite (fromRational . sin')
 -- >>> let c = DE.generate1 id (pi'/2, 1)
@@ -396,7 +406,40 @@ ctSubsig = dumpLatex $ prepareL cfg [sig1,sig2,sig3]
     cfg = config { xmax = 6
                  , labels = [ "ct-subsig-s1", "ct-subsig-s2"
                             , "ct-subsig-s3"] }
-    sig1 = CT.infinite (T.sin)
+    sig1 = CT.infinite (T.sin) :: CT.Signal Time
     sig2 = CT.infinite (T.cos)
     sig3 = CT.signal [(0, T.sin), (3,T.cos)]
   
+--------------- Probability Layer ---------------
+
+probUniform gen = dumpDat $ prepare cfg hx
+  where
+    cfg = config { labels = ["pb-unif"] }
+    x  = UP.uniform :: Dist Float
+    hx = histogram (-0.5) 1.5 0.1 $ samplesn gen 10000 x
+
+probUniformR gen = dumpDat $ prepare cfg hx
+  where
+    cfg = config { labels = ["pb-unifr"] }
+    x  = UP.uniformR 0 20 :: Dist Int
+    hx = histogram (-1) 21 1 $ samplesn gen 10000 x
+    
+probUniformD gen = dumpDat $ prepare cfg hx
+  where
+    cfg = config { labels = ["pb-unifd"] }
+    x  = UP.uniformD 0.5 5 :: Dist Float
+    hx = histogram 4 6 0.1 $ samplesn gen 10000 x
+
+probNormal gen = dumpDat $ prepareL cfg hx
+  where
+    cfg = config { labels = ["pb-gaus1","pb-gaus2","pb-gaus3"] }
+    x1  = NP.normal 0.2 2 :: Dist Float
+    x2  = NP.normal 0.5 1 :: Dist Float
+    x3  = NP.normal 0.6 2 :: Dist Float
+    hx = map (histogram 0 3 0.2 . samplesn gen 10000) [x1,x2,x3]
+
+probNormal' gen = dumpDat $ prepare cfg hx
+  where
+    cfg = config { labels = ["pb-gausp"] }
+    x  = NP.normal' :: Dist Float
+    hx = histogram (-1) 1 0.2 $ samplesn gen 20000 x

@@ -1,0 +1,54 @@
+\documentclass{standalone}
+\usepackage{forsyde-atom-docs} 
+\usepackage[tikz,plot,math]{forsyde}
+
+
+\begin{document}
+\begin{docimage}{unif}
+\begin{tikzpicture}
+  \begin{axis}[ytick=\empty]
+    \addplot table {data/pb-unif.dat};
+  \end{axis}
+\end{tikzpicture}
+\end{docimage}   
+
+\begin{docimage}{unifr}
+\begin{tikzpicture}
+  \begin{axis}[ytick=\empty]
+    \addplot table {data/pb-unifr.dat};
+  \end{axis}
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{unifd}
+\begin{tikzpicture}
+  \begin{axis}[ytick=\empty]
+    \addplot table {data/pb-unifd.dat};
+  \end{axis}
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{gaus}
+\begin{tikzpicture}
+  \begin{axis}[ytick=\empty]
+    \addplot table {data/pb-gaus1.dat};
+    \addplot table {data/pb-gaus2.dat};
+    \addplot table {data/pb-gaus3.dat};
+  \end{axis}
+\end{tikzpicture}
+\end{docimage}
+
+\begin{docimage}{gausp}
+\begin{tikzpicture}
+  \begin{axis}[ytick=\empty]
+    \addplot table {data/pb-gausp.dat};
+  \end{axis}
+\end{tikzpicture}
+\end{docimage}   
+\end{document}
+
+%%% Local Variables:
+%%% TeX-command-default: "Make"
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
